@@ -35,18 +35,26 @@
 
 <div class="max-w-6xl mx-auto px-4 py-16">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="p-6 border rounded-lg">
+        <!-- Explore Expeditions -->
+        <a href="{{ route('expeditions.index') }}" class="p-6 border rounded-lg hover:shadow-lg hover:border-blue-500 transition cursor-pointer bg-white hover:bg-blue-50">
             <h3 class="text-2xl font-bold mb-2">🏔️ Explore</h3>
             <p class="text-gray-600">Discover mountains and expeditions across Pakistan</p>
-        </div>
-        <div class="p-6 border rounded-lg">
+            <div class="mt-4 text-blue-600 font-semibold">Browse Expeditions →</div>
+        </a>
+
+        <!-- Train with Guides -->
+        <a href="{{ route('vendors.index') }}" class="p-6 border rounded-lg hover:shadow-lg hover:border-green-500 transition cursor-pointer bg-white hover:bg-green-50">
             <h3 class="text-2xl font-bold mb-2">📚 Train</h3>
             <p class="text-gray-600">Learn from certified guides and mentors</p>
-        </div>
-        <div class="p-6 border rounded-lg">
+            <div class="mt-4 text-green-600 font-semibold">View Guides →</div>
+        </a>
+
+        <!-- Connect Community -->
+        <a href="{{ route('community.index') }}" class="p-6 border rounded-lg hover:shadow-lg hover:border-purple-500 transition cursor-pointer bg-white hover:bg-purple-50">
             <h3 class="text-2xl font-bold mb-2">🤝 Connect</h3>
             <p class="text-gray-600">Join our community of climbers and trekkers</p>
-        </div>
+            <div class="mt-4 text-purple-600 font-semibold">Join Community →</div>
+        </a>
     </div>
 </div>
 @endsection
