@@ -121,7 +121,7 @@ class VendorsController extends Controller
      */
     public function show(Vendor $vendor)
     {
-        $vendor->load('services', 'verifiedBy');
+        $vendor->load('verifiedBy');
 
         return view('admin.vendors.show', [
             'vendor' => $vendor,
