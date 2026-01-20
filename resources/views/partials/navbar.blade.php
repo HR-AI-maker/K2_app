@@ -13,6 +13,7 @@
                 <a href="{{ route('expeditions.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Expeditions</a>
                 <a href="{{ route('community.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Community</a>
                 <a href="{{ route('vendors.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Vendors</a>
+                <a href="{{ route('marketplace.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Marketplace</a>
             </div>
 
             <!-- Search Bar (visible when authenticated) -->
@@ -36,6 +37,16 @@
             <!-- Right Side (Notifications & Profile) -->
             <div class="flex gap-4 flex-shrink-0 items-center">
                 @if (auth()->check())
+                    <!-- Cart Icon -->
+                    <a href="{{ route('cart.index') }}" class="text-2xl hover:text-blue-600 relative">
+                        🛒
+                        @if (auth()->user()->cartItems->count() > 0)
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                {{ auth()->user()->cartItems->sum('quantity') }}
+                            </span>
+                        @endif
+                    </a>
+
                     <!-- Notifications Bell -->
                     <div class="relative" x-data="{ notifOpen: false }">
                         <button @click="notifOpen = !notifOpen" class="text-2xl hover:text-blue-600 relative">
@@ -60,6 +71,11 @@
                     <div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow z-50 border">
                         <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
                         <a href="{{ route('profile.medical') }}" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+                        <a href="{{ route('orders.index') }}" class="block px-4 py-2 hover:bg-gray-100">My Orders</a>
+                        @if (auth()->user()->isVendor())
+                            <a href="{{ route('vendor.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-blue-600">Vendor Dashboard</a>
+                            <hr class="my-2">
+                        @endif
                         @if (auth()->user()->isAdmin())
                             <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-red-600">Admin Panel</a>
                             <hr class="my-2">
@@ -71,7 +87,10 @@
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Sign In</a>
+                <div class="flex gap-2">
+                    <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700">Sign In</a>
+                    <a href="{{ route('member.register') }}" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Join Now</a>
+                </div>
             @endif
         </div>
     </div>

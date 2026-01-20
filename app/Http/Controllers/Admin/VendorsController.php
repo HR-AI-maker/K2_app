@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vendor;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class VendorsController extends Controller
 {
@@ -187,6 +189,50 @@ class VendorsController extends Controller
             return back()->with('success', "Vendor '{$vendor->business_name}' verified successfully.");
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to verify vendor. Please try again.');
+        }
+    }
+
+    /**
+     * Create vendor login credentials.
+     */
+    public function createCredentials(Request $request, Vendor $vendor)
+    {
+        if ($vendor->status !== 'verified') {
+            return back()->with('error', 'Only verified vendors can create credentials.');
+        }
+
+        if ($vendor->vendor_user_id) {
+            return back()->with('error', 'This vendor already has login credentials.');
+        }
+
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
+
+        try {
+            // Create user account
+            $user = User::create([
+                'first_name' => explode(' ', $vendor->contact_person)[0],
+                'last_name' => collect(explode(' ', $vendor->contact_person))->slice(1)->join(' ') ?: 'User',
+                'email' => $validated['email'],
+                'phone' => $vendor->phone,
+                'password' => bcrypt($validated['password']),
+                'user_type' => 'local',
+                'membership_tier' => 'standard',
+                'membership_status' => 'active',
+                'is_admin' => false,
+            ]);
+
+            // Link to vendor
+            $vendor->update([
+                'vendor_user_id' => $user->id,
+                'can_sell' => true,
+            ]);
+
+            return back()->with('success', "Vendor credentials created successfully. Email: {$validated['email']}");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to create credentials. Please try again.');
         }
     }
 
