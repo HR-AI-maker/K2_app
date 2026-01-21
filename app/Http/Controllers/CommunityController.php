@@ -73,7 +73,7 @@ class CommunityController extends Controller
             }
         }
 
-        $post->load('user', 'approvedBy', 'comments.user');
+        $post->load('user', 'approvedBy');
 
         return view('community.show', [
             'post' => $post,

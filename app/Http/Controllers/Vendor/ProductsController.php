@@ -56,7 +56,11 @@ class ProductsController extends Controller
 
     public function edit(Product $product): View
     {
-        $this->authorize('update', $product);
+        // Check if user owns this product's vendor
+        $vendor = auth()->user()->managedVendor;
+        if (!$vendor || $product->vendor_id !== $vendor->id) {
+            abort(403, 'Unauthorized - You do not own this product');
+        }
 
         $categories = ['equipment', 'clothing', 'guides', 'transport', 'lodging', 'food', 'other'];
 
@@ -65,7 +69,11 @@ class ProductsController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $this->authorize('update', $product);
+        // Check if user owns this product's vendor
+        $vendor = auth()->user()->managedVendor;
+        if (!$vendor || $product->vendor_id !== $vendor->id) {
+            abort(403, 'Unauthorized - You do not own this product');
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:200',
@@ -88,7 +96,11 @@ class ProductsController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        $this->authorize('delete', $product);
+        // Check if user owns this product's vendor
+        $vendor = auth()->user()->managedVendor;
+        if (!$vendor || $product->vendor_id !== $vendor->id) {
+            abort(403, 'Unauthorized - You do not own this product');
+        }
 
         $product->delete();
 

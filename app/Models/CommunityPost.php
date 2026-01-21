@@ -36,9 +36,4 @@ class CommunityPost extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
-
-    public function comments()
-    {
-        return $this->hasMany(CommunityComment::class, 'post_id');
-    }
 }

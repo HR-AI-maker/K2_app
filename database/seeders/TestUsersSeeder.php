@@ -4,9 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\MembershipTier;
-use App\Models\Payment;
-use App\Models\MembershipTransaction;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Hash;
 
 class TestUsersSeeder extends Seeder
@@ -16,15 +14,21 @@ class TestUsersSeeder extends Seeder
      */
     public function run(): void
     {
-        // Skip if test users already exist
-        if (User::where('email', 'admin@alpine.test')->exists()) {
-            $this->command->info('Test users already exist. Skipping seeder.');
-            return;
-        }
-
-        // Get membership tiers
-        $proTier = MembershipTier::where('name', 'Pro')->first();
-        $ultimateTier = MembershipTier::where('name', 'Ultimate')->first();
+        // Delete existing test users to allow re-seeding
+        $testEmails = [
+            'admin@alpine.test',
+            'superadmin@alpine.test',
+            'ahmed.vendor@alpine.test',
+            'fatima.vendor@alpine.test',
+            'hassan.vendor@alpine.test',
+            'ali.member@alpine.test',
+            'zara.member@alpine.test',
+            'bilal.member@alpine.test',
+            'aisha.member@alpine.test',
+            'samir.member@alpine.test',
+            'kareem.suspended@alpine.test'
+        ];
+        User::whereIn('email', $testEmails)->forceDelete();
 
         // Create Admin Users (2)
         User::create([
@@ -33,11 +37,9 @@ class TestUsersSeeder extends Seeder
             'email' => 'admin@alpine.test',
             'phone' => '03011234567',
             'password' => Hash::make('password123'),
-            'role' => 'admin',
+            'is_admin' => true,
             'membership_tier' => 'premium',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addYear(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -47,11 +49,9 @@ class TestUsersSeeder extends Seeder
             'email' => 'superadmin@alpine.test',
             'phone' => '03019876543',
             'password' => Hash::make('password123'),
-            'role' => 'admin',
+            'is_admin' => true,
             'membership_tier' => 'premium',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addYear(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -62,11 +62,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'ahmed.vendor@alpine.test',
             'phone' => '03021551234',
             'password' => Hash::make('password123'),
-            'role' => 'vendor',
             'membership_tier' => 'standard',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -76,11 +73,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'fatima.vendor@alpine.test',
             'phone' => '03022555678',
             'password' => Hash::make('password123'),
-            'role' => 'vendor',
             'membership_tier' => 'premium',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -90,12 +84,68 @@ class TestUsersSeeder extends Seeder
             'email' => 'hassan.vendor@alpine.test',
             'phone' => '03023559999',
             'password' => Hash::make('password123'),
-            'role' => 'vendor',
             'membership_tier' => 'standard',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
+        ]);
+
+        // Create Admin users first to get IDs
+        $admin = User::where('email', 'admin@alpine.test')->first();
+        $adminId = $admin?->id ?? 1;
+
+        // Create Vendor Records linked to users
+        Vendor::create([
+            'vendor_user_id' => $vendor1->id,
+            'business_name' => 'Ahmed\'s Equipment Store',
+            'contact_person' => 'Ahmed Khan',
+            'email' => 'ahmed.vendor@alpine.test',
+            'phone' => '03021551234',
+            'address' => 'Islamabad, Pakistan',
+            'business_type' => 'equipment',
+            'description' => 'High quality climbing equipment and gear',
+            'is_certified' => true,
+            'can_sell' => true,
+            'status' => 'verified',
+            'verified_by' => $adminId,
+            'verified_at' => now(),
+            'rating' => 4.8,
+            'total_bookings' => 45,
+        ]);
+
+        Vendor::create([
+            'vendor_user_id' => $vendor2->id,
+            'business_name' => 'Fatima\'s Mountain Tours',
+            'contact_person' => 'Fatima Hassan',
+            'email' => 'fatima.vendor@alpine.test',
+            'phone' => '03022555678',
+            'address' => 'Gilgit, Pakistan',
+            'business_type' => 'guide',
+            'description' => 'Professional guided climbing tours and expeditions',
+            'is_certified' => true,
+            'can_sell' => true,
+            'status' => 'verified',
+            'verified_by' => $adminId,
+            'verified_at' => now(),
+            'rating' => 5.0,
+            'total_bookings' => 78,
+        ]);
+
+        Vendor::create([
+            'vendor_user_id' => $vendor3->id,
+            'business_name' => 'Hassan\'s Guide Services',
+            'contact_person' => 'Hassan Ahmed',
+            'email' => 'hassan.vendor@alpine.test',
+            'phone' => '03023559999',
+            'address' => 'Hunza, Pakistan',
+            'business_type' => 'guide',
+            'description' => 'Expert mountain guides and training',
+            'is_certified' => true,
+            'can_sell' => true,
+            'status' => 'verified',
+            'verified_by' => $adminId,
+            'verified_at' => now(),
+            'rating' => 4.9,
+            'total_bookings' => 62,
         ]);
 
         // Create Member Users (6)
@@ -105,11 +155,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'ali.member@alpine.test',
             'phone' => '03031771111',
             'password' => Hash::make('password123'),
-            'role' => 'member',
             'membership_tier' => 'standard',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -119,11 +166,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'zara.member@alpine.test',
             'phone' => '03032772222',
             'password' => Hash::make('password123'),
-            'role' => 'member',
             'membership_tier' => 'premium',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -133,11 +177,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'bilal.member@alpine.test',
             'phone' => '03033773333',
             'password' => Hash::make('password123'),
-            'role' => 'member',
             'membership_tier' => 'standard',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -147,11 +188,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'aisha.member@alpine.test',
             'phone' => '03034774444',
             'password' => Hash::make('password123'),
-            'role' => 'member',
             'membership_tier' => 'standard',
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
         ]);
 
@@ -161,11 +199,8 @@ class TestUsersSeeder extends Seeder
             'email' => 'samir.member@alpine.test',
             'phone' => '03035775555',
             'password' => Hash::make('password123'),
-            'role' => 'member',
             'membership_tier' => 'premium',
-            'membership_status' => 'active',
-            'membership_expires_at' => now()->subDays(5), // Expired
-            'phone_verified_at' => now(),
+            'membership_status' => 'expired', // Expired
             'email_verified_at' => now(),
         ]);
 
@@ -176,61 +211,9 @@ class TestUsersSeeder extends Seeder
             'email' => 'kareem.suspended@alpine.test',
             'phone' => '03036776666',
             'password' => Hash::make('password123'),
-            'role' => 'member',
             'membership_tier' => 'standard',
             'membership_status' => 'suspended',
-            'membership_expires_at' => now()->addMonth(),
-            'phone_verified_at' => now(),
             'email_verified_at' => now(),
-        ]);
-
-        // Create Payment records for members
-        Payment::create([
-            'user_id' => User::where('email', 'ali.member@alpine.test')->first()->id,
-            'amount' => 1000,
-            'payment_method' => 'card',
-            'payment_status' => 'completed',
-            'verification_status' => 'verified',
-            'payment_verified_at' => now(),
-            'verified_by' => User::where('email', 'admin@alpine.test')->first()->id,
-            'transaction_reference' => 'HBL-TEST-001',
-        ]);
-
-        Payment::create([
-            'user_id' => User::where('email', 'zara.member@alpine.test')->first()->id,
-            'amount' => 2000,
-            'payment_method' => 'card',
-            'payment_status' => 'completed',
-            'verification_status' => 'verified',
-            'payment_verified_at' => now(),
-            'verified_by' => User::where('email', 'admin@alpine.test')->first()->id,
-            'transaction_reference' => 'HBL-TEST-002',
-        ]);
-
-        // Create Membership Transaction records
-        $proTierId = $proTier?->id ?? 1;
-        $ultimateTierId = $ultimateTier?->id ?? 2;
-
-        MembershipTransaction::create([
-            'user_id' => User::where('email', 'ali.member@alpine.test')->first()->id,
-            'payment_id' => Payment::where('transaction_reference', 'HBL-TEST-001')->first()->id,
-            'membership_tier_id' => $proTierId,
-            'transaction_type' => 'new_membership',
-            'amount' => 1000,
-            'starts_at' => now()->subDays(5),
-            'expires_at' => now()->addMonth(),
-            'is_active' => true,
-        ]);
-
-        MembershipTransaction::create([
-            'user_id' => User::where('email', 'zara.member@alpine.test')->first()->id,
-            'payment_id' => Payment::where('transaction_reference', 'HBL-TEST-002')->first()->id,
-            'membership_tier_id' => $ultimateTierId,
-            'transaction_type' => 'new_membership',
-            'amount' => 2000,
-            'starts_at' => now()->subDays(5),
-            'expires_at' => now()->addMonth(),
-            'is_active' => true,
         ]);
 
         $this->command->info('Test users seeded successfully!');
@@ -256,9 +239,8 @@ class TestUsersSeeder extends Seeder
 
         $this->command->newLine();
         $this->command->info('✓ 2 Admin users created');
-        $this->command->info('✓ 3 Vendor users created');
+        $this->command->info('✓ 3 Vendor users created with verified vendor records');
         $this->command->info('✓ 6 Member users created (various statuses)');
-        $this->command->info('✓ Payment and transaction records created');
         $this->command->newLine();
         $this->command->warn('Note: Password for all test users is "password123"');
     }

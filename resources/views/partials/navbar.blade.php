@@ -6,7 +6,8 @@
                 <a href="{{ route('home') }}">Pak Alpine</a>
             </div>
 
-            <!-- Navigation Links -->
+            <!-- Navigation Links (Only for authenticated users) -->
+            @if (auth()->check())
             <div class="flex gap-8 flex-1">
                 <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Home</a>
                 <a href="{{ route('events.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Events</a>
@@ -15,6 +16,9 @@
                 <a href="{{ route('vendors.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Vendors</a>
                 <a href="{{ route('marketplace.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Marketplace</a>
             </div>
+            @else
+            <div class="flex-1"></div>
+            @endif
 
             <!-- Search Bar (visible when authenticated) -->
             @if (auth()->check())

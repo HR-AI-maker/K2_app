@@ -25,43 +25,16 @@ use App\Http\Controllers\Vendor\OrdersController as VendorOrdersController;
 use App\Http\Controllers\Admin\ProductsController as AdminProductsController;
 use App\Http\Controllers\Admin\OrdersController as AdminOrdersController;
 use App\Http\Controllers\Auth\MemberRegistrationController;
+use App\Http\Controllers\DashboardRedirectController;
+use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 
-// Public routes
+// Landing page (not authenticated)
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return redirect()->route('dashboard.redirect');
+    }
+    return view('landing');
 })->name('home');
-
-// Public events
-Route::prefix('events')->name('events.')->group(function () {
-    Route::get('/', [EventsController::class, 'index'])->name('index');
-    Route::get('/{event}', [EventsController::class, 'show'])->name('show');
-});
-
-// Public expeditions
-Route::prefix('expeditions')->name('expeditions.')->group(function () {
-    Route::get('/', [ExpeditionsController::class, 'index'])->name('index');
-    Route::get('/{expedition}', [ExpeditionsController::class, 'show'])->name('show');
-});
-
-// Public community
-Route::prefix('community')->name('community.')->group(function () {
-    Route::get('/', [CommunityController::class, 'index'])->name('index');
-    Route::get('/{post}', [CommunityController::class, 'show'])->name('show');
-});
-
-// Public vendors
-Route::prefix('vendors')->name('vendors.')->group(function () {
-    Route::get('/', [VendorsController::class, 'index'])->name('index');
-    Route::get('/{vendor}', [VendorsController::class, 'show'])->name('show');
-});
-
-// Public marketplace
-Route::prefix('marketplace')->name('marketplace.')->group(function () {
-    Route::get('/', [MarketplaceController::class, 'index'])->name('index');
-    Route::get('/category/{category}', [MarketplaceController::class, 'category'])->name('category');
-    Route::get('/vendor/{vendor}', [MarketplaceController::class, 'vendor'])->name('vendor');
-    Route::get('/product/{product}', [MarketplaceController::class, 'show'])->name('product.show');
-});
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
@@ -87,14 +60,54 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function () {
+    // Dashboard redirect based on role
+    Route::get('/dashboard/redirect', [DashboardRedirectController::class, 'redirect'])->name('dashboard.redirect');
+
     // Member Registration Success
     Route::get('/member/success', [MemberRegistrationController::class, 'showSuccess'])->name('member.success');
 
     // Search
     Route::get('/search', [EventsController::class, 'search'])->name('search');
 
-    // Dashboard
+    // Member Dashboard
+    Route::get('/member/dashboard', [MemberDashboardController::class, 'index'])->name('member.dashboard')->middleware('member');
+
+    // Legacy Dashboard (keep for backwards compatibility)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Protected Events (auth required)
+    Route::prefix('events')->name('events.')->group(function () {
+        Route::get('/', [EventsController::class, 'index'])->name('index');
+        Route::get('/{event}', [EventsController::class, 'show'])->name('show');
+    });
+
+    // Protected Expeditions (auth required)
+    Route::prefix('expeditions')->name('expeditions.')->group(function () {
+        Route::get('/', [ExpeditionsController::class, 'index'])->name('index');
+        Route::get('/{expedition}', [ExpeditionsController::class, 'show'])->name('show');
+    });
+
+    // Protected Community (auth required)
+    Route::prefix('community')->name('community.')->group(function () {
+        Route::get('/', [CommunityController::class, 'index'])->name('index');
+        Route::get('/create', [CommunityController::class, 'create'])->name('create');
+        Route::post('/', [CommunityController::class, 'store'])->name('store');
+        Route::get('/{post}', [CommunityController::class, 'show'])->name('show');
+    });
+
+    // Protected Vendors (auth required)
+    Route::prefix('vendors')->name('vendors.')->group(function () {
+        Route::get('/', [VendorsController::class, 'index'])->name('index');
+        Route::get('/{vendor}', [VendorsController::class, 'show'])->name('show');
+    });
+
+    // Protected Marketplace (auth required)
+    Route::prefix('marketplace')->name('marketplace.')->group(function () {
+        Route::get('/', [MarketplaceController::class, 'index'])->name('index');
+        Route::get('/category/{category}', [MarketplaceController::class, 'category'])->name('category');
+        Route::get('/vendor/{vendor}', [MarketplaceController::class, 'vendor'])->name('vendor');
+        Route::get('/product/{product}', [MarketplaceController::class, 'show'])->name('product.show');
+    });
 
     // Event registration (auth required)
     Route::post('/events/{event}/register', [EventsController::class, 'storeRegistration'])
@@ -126,12 +139,6 @@ Route::middleware('auth')->group(function () {
 
         // Badges
         Route::get('/badges', [ProfileController::class, 'badges'])->name('badges');
-    });
-
-    // Community posting (auth required)
-    Route::prefix('community')->name('community.')->group(function () {
-        Route::get('/create', [CommunityController::class, 'create'])->name('create');
-        Route::post('/', [CommunityController::class, 'store'])->name('store');
     });
 
     // Cart
