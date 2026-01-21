@@ -2,32 +2,1078 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom styles */
+/* ============================================
+   VUEXY-INSPIRED DESIGN SYSTEM FOR K2 ALPINE
+   ============================================ */
+
+/* Color Palette - K2 Alpine: Mountain Adventure Premium Design */
+:root {
+    /* Primary Colors - Mountain Blue */
+    --primary: #1e5f8a;
+    --primary-light: #e8f2f7;
+    --primary-dark: #0f3d56;
+
+    /* Secondary Colors - Forest Green */
+    --secondary: #2a7f5e;
+    --secondary-light: #e8f4f0;
+    --secondary-dark: #1a4d38;
+
+    /* Accent Colors - Mountain Gold */
+    --accent: #d97706;
+    --accent-light: #fef3e2;
+    --accent-dark: #92540a;
+
+    /* Success/Positive */
+    --success: #10b981;
+    --success-light: #dcfce7;
+
+    /* Warning */
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+
+    /* Danger */
+    --danger: #ef4444;
+    --danger-light: #fee2e2;
+
+    /* Neutral Colors */
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+}
+
+/* Typography System */
+html {
+    font-size: 16px;
+}
+
 body {
-    @apply antialiased;
+    @apply antialiased text-gray-700;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--gray-50);
+    color: var(--gray-800);
 }
 
-/* Components */
+h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-gray-900;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+h1 { @apply text-4xl font-bold mb-4; }
+h2 { @apply text-3xl font-bold mb-3; }
+h3 { @apply text-2xl font-bold mb-2; }
+h4 { @apply text-xl font-bold mb-2; }
+h5 { @apply text-lg font-semibold mb-1; }
+h6 { @apply text-base font-semibold mb-1; }
+
+p {
+    @apply text-base leading-relaxed;
+    color: var(--gray-600);
+}
+
+/* Layout Structure */
+.app-layout {
+    @apply flex min-h-screen;
+}
+
+.sidebar {
+    @apply w-64 bg-white border-r border-gray-200 fixed left-0 top-0 h-full overflow-y-auto transition-all duration-300;
+    box-shadow: var(--shadow-sm);
+}
+
+.sidebar.collapsed {
+    @apply w-20;
+}
+
+.main-content {
+    @apply flex-1 ml-64 transition-all duration-300;
+}
+
+.main-content.with-collapsed-sidebar {
+    @apply ml-20;
+}
+
+/* Navbar - Main Navigation */
+.navbar {
+    @apply bg-white sticky top-0 z-50;
+    border-bottom: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    height: 4rem;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-content {
+    @apply px-6 flex items-center justify-between gap-4 h-full w-full;
+}
+
+.navbar-logo {
+    @apply font-bold text-2xl flex-shrink-0;
+    color: var(--primary-dark);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-logo:hover {
+    color: var(--primary);
+}
+
+.navbar-links {
+    @apply flex gap-8 flex-1;
+    display: none;
+}
+
+.navbar-links a {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 0.25rem;
+}
+
+.navbar-links a:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.navbar-links a.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 600;
+}
+
+@media (min-width: 768px) {
+    .navbar-links {
+        display: flex;
+    }
+}
+
+.navbar-search {
+    @apply flex-1 max-w-xs hidden;
+}
+
+@media (min-width: 1024px) {
+    .navbar-search {
+        display: flex;
+    }
+}
+
+.navbar-search-input {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.navbar-search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 95, 138, 0.1);
+}
+
+.navbar-actions {
+    @apply flex gap-4 flex-shrink-0 items-center;
+}
+
+.navbar-icon-btn {
+    @apply text-2xl hover:text-blue-600 relative flex items-center justify-center;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+}
+
+.navbar-icon-btn:hover {
+    color: var(--primary);
+    background-color: var(--gray-100);
+}
+
+.navbar-badge {
+    @apply absolute top-0 right-0 inline-flex items-center justify-center text-xs font-bold text-white;
+    background-color: var(--danger);
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    transform: translate(25%, -25%);
+}
+
+.navbar-user-btn {
+    @apply px-4 py-2 rounded-lg font-semibold;
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-user-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(30, 95, 138, 0.2);
+}
+
+/* Buttons - Alpine Mountain Design */
 .btn {
-    @apply px-4 py-2 rounded-lg font-semibold transition-colors;
+    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200 inline-flex items-center gap-2;
+    cursor: pointer;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    border: none;
 }
 
+.btn:disabled {
+    @apply opacity-60 cursor-not-allowed;
+}
+
+/* Primary Button - Mountain Blue */
 .btn-primary {
-    @apply btn bg-blue-600 text-white hover:bg-blue-700;
+    background-color: var(--primary);
+    color: #ffffff;
 }
 
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(30, 95, 138, 0.2);
+}
+
+.btn-primary:focus:not(:disabled) {
+    outline: 2px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+/* Secondary Button - Forest Green */
 .btn-secondary {
-    @apply btn bg-gray-600 text-white hover:bg-gray-700;
+    background-color: var(--secondary);
+    color: #ffffff;
 }
 
+.btn-secondary:hover:not(:disabled) {
+    background-color: var(--secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(42, 127, 94, 0.2);
+}
+
+.btn-secondary:focus:not(:disabled) {
+    outline: 2px solid var(--secondary-dark);
+    outline-offset: 2px;
+}
+
+/* Outline Button - Mountain Blue */
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-outline:hover:not(:disabled) {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.btn-outline:focus:not(:disabled) {
+    outline: 2px solid var(--primary-dark);
+    outline-offset: 2px;
+}
+
+/* Ghost Button - Minimal */
+.btn-ghost {
+    background-color: transparent;
+    color: var(--primary);
+    border: none;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background-color: var(--primary-light);
+    transform: translateX(2px);
+}
+
+/* Danger Button */
 .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700;
+    background-color: var(--danger);
+    color: #ffffff;
 }
 
-.input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600;
+.btn-danger:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.2);
 }
 
+/* Success Button */
+.btn-success {
+    background-color: var(--success);
+    color: #ffffff;
+}
+
+.btn-success:hover:not(:disabled) {
+    background-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.2);
+}
+
+/* Warning Button */
+.btn-warning {
+    background-color: var(--warning);
+    color: #ffffff;
+}
+
+.btn-warning:hover:not(:disabled) {
+    background-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(217, 119, 6, 0.2);
+}
+
+/* Size Variants */
+.btn-sm {
+    @apply px-3 py-1 text-sm;
+}
+
+.btn-md {
+    @apply px-6 py-2 text-base;
+}
+
+.btn-lg {
+    @apply px-8 py-3 text-lg;
+}
+
+/* Icon Button */
+.btn-icon {
+    @apply p-2 rounded-lg flex items-center justify-center;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+/* Form Inputs - Alpine Design */
+.form-control {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300 text-gray-900 transition-all duration-200;
+    font-size: 1rem;
+    background-color: #ffffff;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 95, 138, 0.1);
+}
+
+.form-control:disabled {
+    background-color: var(--gray-100);
+    color: var(--gray-500);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.form-control::placeholder {
+    @apply text-gray-400;
+}
+
+.form-label {
+    @apply block text-sm font-semibold text-gray-700 mb-2;
+}
+
+.form-label.required::after {
+    content: " *";
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.form-group {
+    @apply mb-6;
+}
+
+.form-error {
+    @apply text-xs mt-1;
+    color: var(--danger);
+    font-weight: 500;
+}
+
+.form-help {
+    @apply text-xs mt-1 text-gray-500;
+    font-style: italic;
+}
+
+/* Cards - Alpine Mountain Design */
 .card {
-    @apply bg-white p-6 rounded-lg shadow;
+    @apply bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300;
+    box-shadow: var(--shadow);
+}
+
+.card:hover {
+    @apply border-gray-300;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+}
+
+.card-header {
+    @apply pb-4 border-b border-gray-200 mb-4;
+}
+
+.card-title {
+    @apply text-xl font-bold;
+    color: var(--primary-dark);
+}
+
+.card-subtitle {
+    @apply text-sm text-gray-500;
+}
+
+.card-body {
+    @apply flex-1;
+}
+
+.card-footer {
+    @apply pt-4 border-t border-gray-200 mt-4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Featured/Premium Card */
+.card-featured {
+    @apply border-2;
+    border-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.card-featured:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transform: translateY(-6px);
+}
+
+/* Stat Cards - Dashboard Metrics */
+.stat-card {
+    @apply bg-white rounded-xl border-l-4 p-6 transition-all duration-300;
+    border-left-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-4;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    opacity: 0.2;
+}
+
+.stat-card.success {
+    border-left-color: var(--success);
+}
+
+.stat-card.success .stat-card-icon {
+    background-color: var(--success-light);
+    color: var(--success);
+}
+
+.stat-card.warning {
+    border-left-color: var(--warning);
+}
+
+.stat-card.warning .stat-card-icon {
+    background-color: var(--warning-light);
+    color: var(--warning);
+}
+
+.stat-card.danger {
+    border-left-color: var(--danger);
+}
+
+.stat-card.danger .stat-card-icon {
+    background-color: var(--danger-light);
+    color: var(--danger);
+}
+
+.stat-card-value {
+    @apply text-3xl font-bold mb-1;
+    color: var(--primary-dark);
+}
+
+.stat-card-label {
+    @apply text-sm font-medium;
+    color: var(--gray-500);
+}
+
+.stat-card-trend {
+    @apply text-sm font-semibold mt-2;
+}
+
+.stat-card-trend.up {
+    color: var(--success);
+}
+
+.stat-card-trend.down {
+    color: var(--danger);
+}
+
+/* Badges - Alpine Design */
+.badge {
+    @apply inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold;
+}
+
+.badge-primary {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.badge-secondary {
+    background-color: var(--secondary-light);
+    color: var(--secondary-dark);
+}
+
+.badge-accent {
+    background-color: var(--accent-light);
+    color: var(--accent-dark);
+}
+
+.badge-success {
+    background-color: var(--success-light);
+    color: #166534;
+}
+
+.badge-warning {
+    background-color: var(--warning-light);
+    color: #92400e;
+}
+
+.badge-danger {
+    background-color: var(--danger-light);
+    color: #7f1d1d;
+}
+
+.badge-gray {
+    @apply bg-gray-100 text-gray-700;
+}
+
+.badge-dark {
+    @apply bg-gray-800 text-white;
+}
+
+/* Alerts - Alpine Notifications */
+.alert {
+    @apply rounded-lg border-l-4 p-4 flex items-start gap-3;
+}
+
+.alert-info {
+    @apply bg-blue-50;
+    border-left-color: #0ea5e9;
+    color: #0c4a6e;
+}
+
+.alert-success {
+    @apply bg-green-50;
+    border-left-color: var(--success);
+    color: #166534;
+}
+
+.alert-warning {
+    @apply bg-amber-50;
+    border-left-color: var(--warning);
+    color: #92400e;
+}
+
+.alert-danger {
+    @apply bg-red-50;
+    border-left-color: var(--danger);
+    color: #7f1d1d;
+}
+
+/* Tables - Alpine Data Display */
+.table {
+    @apply w-full border-collapse;
+    font-size: 0.875rem;
+}
+
+.table thead {
+    @apply bg-gray-50 border-b-2;
+    border-bottom-color: var(--gray-200);
+}
+
+.table th {
+    @apply px-6 py-3 text-left font-semibold text-gray-700 uppercase tracking-wider;
+    font-size: 0.75rem;
+}
+
+.table td {
+    @apply px-6 py-3 border-b;
+    border-bottom-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+.table tbody tr {
+    @apply transition-colors duration-200;
+}
+
+.table tbody tr:hover {
+    background-color: var(--primary-light);
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: var(--gray-50);
+}
+
+/* Modals - Alpine Dialog Windows */
+.modal {
+    @apply fixed inset-0 flex items-center justify-center z-50;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.hidden {
+    @apply hidden;
+}
+
+.modal-content {
+    @apply bg-white rounded-xl w-full shadow-2xl;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-header {
+    @apply p-6 border-b flex items-center justify-between;
+    border-bottom-color: var(--gray-200);
+}
+
+.modal-title {
+    @apply text-xl font-bold;
+    color: var(--primary-dark);
+}
+
+.modal-close {
+    @apply bg-transparent border-none text-2xl cursor-pointer;
+    color: var(--gray-500);
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--primary);
+}
+
+.modal-body {
+    @apply p-6;
+}
+
+.modal-footer {
+    @apply p-6 border-t flex gap-3 justify-end;
+    border-top-color: var(--gray-200);
+    background-color: var(--gray-50);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Dropdowns - Alpine Menu Components */
+.dropdown {
+    @apply relative;
+}
+
+.dropdown-menu {
+    @apply absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border;
+    border-color: var(--gray-200);
+    z-index: 1000;
+    animation: slideUp 0.2s ease-out;
+}
+
+.dropdown-item {
+    @apply px-4 py-2 text-sm text-gray-700 cursor-pointer transition-colors;
+}
+
+.dropdown-item:first-child {
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.dropdown-item:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.dropdown-item.active {
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.dropdown-item:disabled {
+    color: var(--gray-400);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.dropdown-divider {
+    @apply border-t my-1;
+    border-top-color: var(--gray-200);
+}
+
+/* Avatar - User Profile Images */
+.avatar {
+    @apply inline-flex items-center justify-center rounded-full font-semibold text-white;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    border-color: var(--primary);
+}
+
+.avatar-sm {
+    @apply w-8 h-8 text-sm;
+}
+
+.avatar-md {
+    @apply w-10 h-10 text-base;
+}
+
+.avatar-lg {
+    @apply w-12 h-12 text-lg;
+}
+
+.avatar-xl {
+    @apply w-16 h-16 text-xl;
+}
+
+.avatar-primary {
+    background-color: var(--primary);
+}
+
+.avatar-secondary {
+    background-color: var(--secondary);
+}
+
+.avatar-accent {
+    background-color: var(--accent);
+}
+
+.avatar-success {
+    background-color: var(--success);
+}
+
+.avatar-danger {
+    background-color: var(--danger);
+}
+
+.avatar-warning {
+    background-color: var(--warning);
+}
+
+.avatar-gray {
+    background-color: var(--gray-500);
+}
+
+/* Product Card - Marketplace Items */
+.product-card {
+    @apply bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-300;
+    box-shadow: var(--shadow);
+}
+
+.product-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--primary-light);
+}
+
+.product-card:hover .product-card-image {
+    transform: scale(1.05);
+}
+
+.product-card-image {
+    @apply w-full h-48 bg-gray-100 overflow-hidden;
+    transition: transform 0.3s ease;
+    object-fit: cover;
+}
+
+.product-card-body {
+    @apply p-5;
+}
+
+.product-card-title {
+    @apply font-semibold mb-2 text-gray-900;
+    font-size: 1rem;
+}
+
+.product-card-price {
+    @apply text-lg font-bold mb-3;
+    color: var(--accent);
+}
+
+.product-card-footer {
+    @apply flex items-center gap-2;
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}
+
+/* Pagination - Data Navigation */
+.pagination {
+    @apply flex items-center justify-center gap-2;
+}
+
+.pagination-item {
+    @apply w-10 h-10 flex items-center justify-center border rounded-lg;
+    border-color: var(--gray-300);
+    background-color: #ffffff;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.pagination-item:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: var(--primary-light);
+}
+
+.pagination-item.active {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.pagination-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--gray-400);
+}
+
+.pagination-ellipsis {
+    @apply text-gray-500;
+    padding: 0 0.5rem;
+}
+
+/* Empty State - No Data Display */
+.empty-state {
+    @apply flex flex-col items-center justify-center p-8;
+    min-height: 300px;
+    text-align: center;
+}
+
+.empty-state-icon {
+    @apply text-6xl mb-4;
+    color: var(--gray-300);
+}
+
+.empty-state-title {
+    @apply text-xl font-bold mb-2;
+    color: var(--gray-900);
+}
+
+.empty-state-description {
+    @apply text-gray-500 mb-6;
+    max-width: 400px;
+}
+
+.empty-state-action {
+    /* Use .btn classes for buttons */
+}
+
+/* Tooltips - Hover Information */
+.tooltip-container {
+    @apply relative inline-block;
+}
+
+.tooltip-trigger {
+    cursor: help;
+    border-bottom: 1px dotted var(--gray-400);
+}
+
+.tooltip {
+    @apply absolute bottom-full left-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--gray-900);
+}
+
+.tooltip-container:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.spinner {
+    @apply inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.skeleton {
+    @apply bg-gray-200 rounded-lg;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.skeleton-text {
+    @apply h-4 bg-gray-200 rounded;
+}
+
+.skeleton-avatar {
+    @apply w-12 h-12 bg-gray-200 rounded-full;
+}
+
+.skeleton-card {
+    @apply bg-white rounded-lg p-6;
+    box-shadow: var(--shadow);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Transitions - Alpine Animations */
+.transition-fade {
+    transition: opacity 0.2s ease;
+}
+
+.transition-slide {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.transition-scale {
+    transition: transform 0.2s ease;
+}
+
+/* Grid Utilities */
+.grid-cols-1 { @apply grid grid-cols-1; }
+.grid-cols-2 { @apply grid grid-cols-2; }
+.grid-cols-3 { @apply grid grid-cols-3; }
+.grid-cols-4 { @apply grid grid-cols-4; }
+
+/* Mobile Responsive Design (640px and below) */
+@media (max-width: 640px) {
+    .card { @apply p-4; }
+    .card-featured { @apply p-4; }
+
+    h1 { @apply text-2xl; }
+    h2 { @apply text-xl; }
+    h3 { @apply text-lg; }
+
+    .btn { @apply w-full; }
+    .btn-sm { @apply px-2 py-1 text-xs; }
+
+    .navbar { height: 3.5rem; }
+    .navbar-search { display: none !important; }
+    .navbar-links { display: none !important; }
+
+    .grid-cols-2, .grid-cols-3, .grid-cols-4 { @apply grid-cols-1; }
+
+    .table { font-size: 0.75rem; }
+    .table th { @apply px-3 py-2; }
+    .table td { @apply px-3 py-2; }
+
+    .product-card-image { height: 10rem; }
+
+    .modal-content {
+        max-width: 95%;
+        max-height: 95vh;
+    }
+}
+
+/* Tablet Responsive Design (641px - 1023px) */
+@media (min-width: 641px) and (max-width: 1023px) {
+    .grid-cols-3, .grid-cols-4 { @apply grid-cols-2; }
+
+    .sidebar { @apply w-56; }
+    .main-content { @apply ml-56; }
+}
+
+/* Desktop Responsive Design (1024px and above) */
+@media (min-width: 1024px) {
+    .grid-cols-1 { @apply grid-cols-2; }
+    .grid-cols-2 { @apply grid-cols-2; }
+    .grid-cols-3 { @apply grid-cols-3; }
+    .grid-cols-4 { @apply grid-cols-4; }
 }

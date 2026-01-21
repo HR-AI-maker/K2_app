@@ -3,125 +3,244 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="mb-8">
-    <h1 class="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-    <p class="text-gray-600 mt-2">Welcome, {{ auth()->user()->full_name }}</p>
+<!-- Page Header -->
+<div class="mb-6">
+    <h1 style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary); margin: 0 0 0.25rem;">Dashboard</h1>
+    <p style="color: var(--text-muted); margin: 0;">Welcome back, {{ auth()->user()->full_name }}! Here's what's happening.</p>
 </div>
 
-<!-- System Health Overview -->
-<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
-        <p class="text-gray-600 text-sm font-semibold">Total Members</p>
-        <p class="text-3xl font-bold text-blue-600 mt-2">{{ $stats['totalMembers'] }}</p>
+<!-- Analytics Cards Row -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+    <!-- Congratulations Card -->
+    <div class="lg:col-span-2 analytics-card">
+        <div class="relative z-10">
+            <p style="margin: 0 0 0.5rem; opacity: 0.9;">Congratulations! 🎉</p>
+            <h2>PKR {{ number_format($stats['revenueThisMonth'], 0) }}</h2>
+            <p style="margin-bottom: 1rem;">Revenue this month</p>
+            <a href="#" class="vuexy-btn" style="background: rgba(255,255,255,0.2); color: white; padding: 0.5rem 1rem;">
+                View Report
+            </a>
+        </div>
+        <div style="position: absolute; right: 1rem; bottom: 0; font-size: 5rem; opacity: 0.2;">💰</div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
-        <p class="text-gray-600 text-sm font-semibold">Active Members</p>
-        <p class="text-3xl font-bold text-green-600 mt-2">{{ $stats['activeMembers'] }}</p>
+
+    <!-- Sessions Card -->
+    <div class="vuexy-stat-card">
+        <div class="vuexy-stat-content">
+            <h3>{{ $stats['totalMembers'] }}</h3>
+            <p>Total Members</p>
+            <div class="vuexy-stat-trend up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                +12.5%
+            </div>
+        </div>
+        <div class="vuexy-stat-icon primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
-        <p class="text-gray-600 text-sm font-semibold">Pending Verification</p>
-        <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $stats['pendingVerification'] }}</p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
-        <p class="text-gray-600 text-sm font-semibold">Expired</p>
-        <p class="text-3xl font-bold text-red-600 mt-2">{{ $stats['expiredMembers'] }}</p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow border-l-4 border-purple-500">
-        <p class="text-gray-600 text-sm font-semibold">Revenue This Month</p>
-        <p class="text-3xl font-bold text-purple-600 mt-2">PKR {{ number_format($stats['revenueThisMonth'], 0) }}</p>
+
+    <!-- Active Members Card -->
+    <div class="vuexy-stat-card">
+        <div class="vuexy-stat-content">
+            <h3>{{ $stats['activeMembers'] }}</h3>
+            <p>Active Members</p>
+            <div class="vuexy-stat-trend up">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                +8.2%
+            </div>
+        </div>
+        <div class="vuexy-stat-icon success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        </div>
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-2 gap-3">
-            <a href="{{ route('admin.members.index') }}" class="p-4 border rounded-lg hover:bg-blue-50 text-center transition">
-                <p class="font-semibold text-blue-600">👥 Manage Members</p>
-            </a>
-            <a href="#" class="p-4 border rounded-lg hover:bg-green-50 text-center transition">
-                <p class="font-semibold text-green-600">📅 Create Event</p>
-            </a>
-            <a href="#" class="p-4 border rounded-lg hover:bg-purple-50 text-center transition">
-                <p class="font-semibold text-purple-600">📊 View Reports</p>
-            </a>
-            <a href="#" class="p-4 border rounded-lg hover:bg-red-50 text-center transition">
-                <p class="font-semibold text-red-600">🚨 Safety Records</p>
-            </a>
+<!-- Stats Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <!-- Pending Verification -->
+    <div class="vuexy-stat-card">
+        <div class="vuexy-stat-content">
+            <h3>{{ $stats['pendingVerification'] }}</h3>
+            <p>Pending Verification</p>
+        </div>
+        <div class="vuexy-stat-icon warning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+    </div>
+
+    <!-- Expired Members -->
+    <div class="vuexy-stat-card">
+        <div class="vuexy-stat-content">
+            <h3>{{ $stats['expiredMembers'] }}</h3>
+            <p>Expired Members</p>
+        </div>
+        <div class="vuexy-stat-icon danger">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+    </div>
+
+    <!-- Suspended Members -->
+    <div class="vuexy-stat-card">
+        <div class="vuexy-stat-content">
+            <h3>{{ $stats['suspendedMembers'] }}</h3>
+            <p>Suspended</p>
+        </div>
+        <div class="vuexy-stat-icon info">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+    </div>
+
+    <!-- Revenue Card -->
+    <div class="vuexy-stat-card">
+        <div class="vuexy-stat-content">
+            <h3 style="font-size: 1.25rem;">PKR {{ number_format($stats['revenueThisMonth'], 0) }}</h3>
+            <p>Monthly Revenue</p>
+        </div>
+        <div class="vuexy-stat-icon primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Quick Actions Card -->
+    <div class="vuexy-card">
+        <div class="vuexy-card-header">
+            <h3 class="vuexy-card-title">Quick Actions</h3>
+        </div>
+        <div class="vuexy-card-body">
+            <div class="grid grid-cols-2 gap-3">
+                <a href="{{ route('admin.members.index') }}" class="vuexy-btn vuexy-btn-primary w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    Members
+                </a>
+                <a href="{{ route('admin.events.create') }}" class="vuexy-btn vuexy-btn-outline w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    New Event
+                </a>
+                <a href="{{ route('admin.documents.index', ['status' => 'pending']) }}" class="vuexy-btn vuexy-btn-outline w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    Documents
+                </a>
+                <a href="{{ route('admin.orders.index') }}" class="vuexy-btn vuexy-btn-outline w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    Orders
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Member Status Overview -->
-    <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">Member Status Overview</h2>
-        <div class="space-y-3">
-            <div class="flex justify-between items-center">
-                <span class="text-gray-600">Active</span>
-                <div class="flex items-center gap-2">
-                    <div class="w-32 bg-gray-200 rounded-full h-2">
-                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['activeMembers'] / $stats['totalMembers'] * 100) : 0 }}%"></div>
+    <div class="vuexy-card lg:col-span-2">
+        <div class="vuexy-card-header">
+            <h3 class="vuexy-card-title">Member Status Overview</h3>
+            <span class="vuexy-badge vuexy-badge-primary">This Month</span>
+        </div>
+        <div class="vuexy-card-body">
+            <div class="space-y-6">
+                <!-- Active Progress -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Active Members</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--success);">{{ $stats['activeMembers'] }}</span>
                     </div>
-                    <span class="font-bold">{{ $stats['activeMembers'] }}</span>
+                    <div class="vuexy-progress">
+                        <div class="vuexy-progress-bar success" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['activeMembers'] / $stats['totalMembers'] * 100) : 0 }}%;"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="flex justify-between items-center">
-                <span class="text-gray-600">Suspended</span>
-                <div class="flex items-center gap-2">
-                    <div class="w-32 bg-gray-200 rounded-full h-2">
-                        <div class="bg-red-500 h-2 rounded-full" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['suspendedMembers'] / $stats['totalMembers'] * 100) : 0 }}%"></div>
+
+                <!-- Pending Progress -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Pending Verification</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--warning);">{{ $stats['pendingVerification'] }}</span>
                     </div>
-                    <span class="font-bold">{{ $stats['suspendedMembers'] }}</span>
+                    <div class="vuexy-progress">
+                        <div class="vuexy-progress-bar warning" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['pendingVerification'] / $stats['totalMembers'] * 100) : 0 }}%;"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="flex justify-between items-center">
-                <span class="text-gray-600">Expired</span>
-                <div class="flex items-center gap-2">
-                    <div class="w-32 bg-gray-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['expiredMembers'] / $stats['totalMembers'] * 100) : 0 }}%"></div>
+
+                <!-- Suspended Progress -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Suspended</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--danger);">{{ $stats['suspendedMembers'] }}</span>
                     </div>
-                    <span class="font-bold">{{ $stats['expiredMembers'] }}</span>
+                    <div class="vuexy-progress">
+                        <div class="vuexy-progress-bar danger" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['suspendedMembers'] / $stats['totalMembers'] * 100) : 0 }}%;"></div>
+                    </div>
+                </div>
+
+                <!-- Expired Progress -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Expired</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-muted);">{{ $stats['expiredMembers'] }}</span>
+                    </div>
+                    <div class="vuexy-progress">
+                        <div class="vuexy-progress-bar primary" style="width: {{ $stats['totalMembers'] > 0 ? ($stats['expiredMembers'] / $stats['totalMembers'] * 100) : 0 }}%;"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Recent Members -->
+<!-- Activity Section -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">Recently Verified Members</h2>
-        <div class="space-y-3 max-h-96 overflow-y-auto">
+    <!-- Recently Verified Members -->
+    <div class="vuexy-card">
+        <div class="vuexy-card-header">
+            <h3 class="vuexy-card-title">Recently Verified</h3>
+            <a href="{{ route('admin.members.index') }}" style="font-size: 0.875rem; color: var(--primary); text-decoration: none;">View All</a>
+        </div>
+        <div class="vuexy-card-body" style="padding: 0;">
             @forelse($recentMembers as $member)
-                <div class="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
-                    <div>
-                        <p class="font-semibold">{{ $member->full_name }}</p>
-                        <p class="text-sm text-gray-600">{{ $member->email }}</p>
+                <a href="{{ route('admin.members.show', $member) }}" class="activity-item" style="padding: 1rem 1.5rem; text-decoration: none;">
+                    <div class="activity-icon" style="background: rgba(115,103,240,0.12); color: var(--primary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
-                    <a href="{{ route('admin.members.show', $member) }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">View</a>
-                </div>
+                    <div class="activity-content">
+                        <p class="activity-title">{{ $member->full_name }}</p>
+                        <span class="activity-time">{{ $member->email }}</span>
+                    </div>
+                    <span class="vuexy-badge vuexy-badge-success">Verified</span>
+                </a>
             @empty
-                <p class="text-gray-600 text-center py-4">No recently verified members</p>
+                <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    <p>No recently verified members</p>
+                </div>
             @endforelse
         </div>
     </div>
 
-    <!-- Recent Registrations -->
-    <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">Recent Event Registrations</h2>
-        <div class="space-y-3 max-h-96 overflow-y-auto">
+    <!-- Recent Event Registrations -->
+    <div class="vuexy-card">
+        <div class="vuexy-card-header">
+            <h3 class="vuexy-card-title">Event Registrations</h3>
+            <a href="#" style="font-size: 0.875rem; color: var(--primary); text-decoration: none;">View All</a>
+        </div>
+        <div class="vuexy-card-body" style="padding: 0;">
             @forelse($recentRegistrations as $registration)
-                <div class="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50">
-                    <div>
-                        <p class="font-semibold">{{ $registration->user->full_name }}</p>
-                        <p class="text-sm text-gray-600">{{ $registration->event->title }}</p>
+                <div class="activity-item" style="padding: 1rem 1.5rem;">
+                    <div class="activity-icon" style="background: rgba(40,199,111,0.12); color: var(--success);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                     </div>
-                    <span class="inline-block px-3 py-1 bg-{{ $registration->status === 'registered' ? 'green' : 'yellow' }}-100 text-{{ $registration->status === 'registered' ? 'green' : 'yellow' }}-800 text-xs font-semibold rounded-full">
-                        {{ ucfirst($registration->status) }}
-                    </span>
+                    <div class="activity-content">
+                        <p class="activity-title">{{ $registration->user->full_name }}</p>
+                        <span class="activity-time">{{ $registration->event->title }}</span>
+                    </div>
+                    @if($registration->status === 'registered')
+                        <span class="vuexy-badge vuexy-badge-success">Registered</span>
+                    @else
+                        <span class="vuexy-badge vuexy-badge-warning">{{ ucfirst($registration->status) }}</span>
+                    @endif
                 </div>
             @empty
-                <p class="text-gray-600 text-center py-4">No recent registrations</p>
+                <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                    <p>No recent registrations</p>
+                </div>
             @endforelse
         </div>
     </div>
