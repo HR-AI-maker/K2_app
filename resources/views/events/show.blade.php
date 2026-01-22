@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', $event->title)
 
@@ -183,3 +183,4 @@
     </div>
 </div>
 @endsection
+

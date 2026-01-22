@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', 'Vendor Directory')
 
@@ -169,3 +169,4 @@
     </div>
 </div>
 @endsection
+

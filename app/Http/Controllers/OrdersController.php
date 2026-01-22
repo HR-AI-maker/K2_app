@@ -37,8 +37,18 @@ class OrdersController extends Controller
     /**
      * Cancel an order
      */
-    public function cancel(Request $request, $order): RedirectResponse
+    public function cancel(Request $request, Order $order): RedirectResponse
     {
-        return redirect()->back();
+        if ($order->user_id !== auth()->id()) {
+            abort(403, 'You do not have permission to cancel this order');
+        }
+
+        if (!in_array($order->status, ['pending', 'payment_pending'], true)) {
+            return redirect()->back()->with('error', 'This order cannot be cancelled.');
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        return redirect()->back()->with('success', 'Order cancelled successfully.');
     }
 }

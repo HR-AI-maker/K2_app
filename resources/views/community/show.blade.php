@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', $post->title)
 
@@ -208,3 +208,4 @@
     </div>
 </div>
 @endsection
+

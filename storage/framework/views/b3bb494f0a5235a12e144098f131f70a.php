@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title><?php echo e(config('app.name', 'Pak Alpine')); ?> - Vendor <?php echo $__env->yieldContent('title'); ?></title>
+    <title><?php echo e(config('app.name', 'Pak Alpine')); ?> - Member <?php echo $__env->yieldContent('title'); ?></title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -430,10 +430,10 @@
 </head>
 <body>
     <div class="flex min-h-screen" x-data="{ sidebarOpen: false }">
-        <?php echo $__env->make('vendor.partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        <?php echo $__env->make('member.partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <div class="admin-main">
-            <?php echo $__env->make('vendor.partials.navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+            <?php echo $__env->make('member.partials.navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
             <main class="admin-content">
                 <?php if($errors->any()): ?>
@@ -464,4 +464,4 @@
     </div>
 </body>
 </html>
-<?php /**PATH D:\xampp\htdocs\alpine\resources\views/layouts/vendor.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\xampp\htdocs\alpine\resources\views/layouts/member.blade.php ENDPATH**/ ?>

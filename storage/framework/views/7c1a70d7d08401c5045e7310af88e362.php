@@ -1,8 +1,8 @@
-@extends('layouts.member')
 
-@section('title', 'Expeditions')
 
-@section('content')
+<?php $__env->startSection('title', 'Expeditions'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="bg-gray-50 min-h-screen">
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-green-600 to-green-800 text-white py-12">
@@ -22,7 +22,7 @@
                     <input
                         type="text"
                         name="search"
-                        value="{{ request('search') }}"
+                        value="<?php echo e(request('search')); ?>"
                         placeholder="Expedition, location..."
                         class="input"
                     >
@@ -33,10 +33,10 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
                     <select name="difficulty" class="input">
                         <option value="">All Levels</option>
-                        <option value="beginner" {{ request('difficulty') === 'beginner' ? 'selected' : '' }}>Beginner</option>
-                        <option value="intermediate" {{ request('difficulty') === 'intermediate' ? 'selected' : '' }}>Intermediate</option>
-                        <option value="advanced" {{ request('difficulty') === 'advanced' ? 'selected' : '' }}>Advanced</option>
-                        <option value="expert" {{ request('difficulty') === 'expert' ? 'selected' : '' }}>Expert</option>
+                        <option value="beginner" <?php echo e(request('difficulty') === 'beginner' ? 'selected' : ''); ?>>Beginner</option>
+                        <option value="intermediate" <?php echo e(request('difficulty') === 'intermediate' ? 'selected' : ''); ?>>Intermediate</option>
+                        <option value="advanced" <?php echo e(request('difficulty') === 'advanced' ? 'selected' : ''); ?>>Advanced</option>
+                        <option value="expert" <?php echo e(request('difficulty') === 'expert' ? 'selected' : ''); ?>>Expert</option>
                     </select>
                 </div>
 
@@ -45,11 +45,12 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
                     <select name="region" class="input">
                         <option value="">All Regions</option>
-                        @foreach ($regions as $region)
-                            <option value="{{ $region }}" {{ request('region') === $region ? 'selected' : '' }}>
-                                {{ $region }}
+                        <?php $__currentLoopData = $regions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $region): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($region); ?>" <?php echo e(request('region') === $region ? 'selected' : ''); ?>>
+                                <?php echo e($region); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
 
@@ -58,7 +59,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                     <select name="status" class="input">
                         <option value="">All Expeditions</option>
-                        <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>Open for Applications</option>
+                        <option value="open" <?php echo e(request('status') === 'open' ? 'selected' : ''); ?>>Open for Applications</option>
                     </select>
                 </div>
 
@@ -72,17 +73,17 @@
         </form>
 
         <!-- Expeditions Grid -->
-        @if ($expeditions->count() > 0)
+        <?php if($expeditions->count() > 0): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                @foreach ($expeditions as $expedition)
-                    @php
+                <?php $__currentLoopData = $expeditions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $expedition): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         $approvedCount = $expedition->applications()->where('status', 'approved')->count();
                         $available = max(0, $expedition->max_participants - $approvedCount);
-                    @endphp
+                    ?>
                     <div class="card hover:shadow-lg transition-shadow">
                         <!-- Difficulty Badge -->
                         <div class="mb-3">
-                            @php
+                            <?php
                                 $colors = [
                                     'beginner' => 'bg-green-100 text-green-800',
                                     'intermediate' => 'bg-yellow-100 text-yellow-800',
@@ -90,85 +91,92 @@
                                     'expert' => 'bg-red-100 text-red-800',
                                 ];
                                 $color = $colors[$expedition->difficulty_level] ?? 'bg-gray-100 text-gray-800';
-                            @endphp
-                            <span class="badge {{ $color }}">
-                                {{ ucfirst($expedition->difficulty_level) }}
+                            ?>
+                            <span class="badge <?php echo e($color); ?>">
+                                <?php echo e(ucfirst($expedition->difficulty_level)); ?>
+
                             </span>
                         </div>
 
                         <!-- Title -->
                         <h3 class="text-lg font-bold mb-2 line-clamp-2">
-                            {{ $expedition->title }}
+                            <?php echo e($expedition->title); ?>
+
                         </h3>
 
                         <!-- Location -->
                         <p class="text-sm text-gray-600 mb-2">
-                            📍 {{ $expedition->location }}, {{ $expedition->region }}
+                            📍 <?php echo e($expedition->location); ?>, <?php echo e($expedition->region); ?>
+
                         </p>
 
                         <!-- Duration -->
                         <p class="text-sm text-gray-600 mb-3">
-                            📅 {{ $expedition->start_date->format('M d') }} - {{ $expedition->end_date->format('M d, Y') }}
+                            📅 <?php echo e($expedition->start_date->format('M d')); ?> - <?php echo e($expedition->end_date->format('M d, Y')); ?>
+
                         </p>
 
                         <!-- Permit Info -->
-                        @if ($expedition->permit_required)
+                        <?php if($expedition->permit_required): ?>
                             <p class="text-xs bg-blue-50 text-blue-700 p-2 rounded mb-3">
                                 📜 Permit required
                             </p>
-                        @endif
+                        <?php endif; ?>
 
                         <!-- Availability -->
                         <div class="mb-4">
-                            @if ($expedition->status === 'open')
-                                @if ($available > 0)
+                            <?php if($expedition->status === 'open'): ?>
+                                <?php if($available > 0): ?>
                                     <div class="text-xs text-green-600 font-semibold mb-1">
-                                        {{ $available }} {{ $available === 1 ? 'slot' : 'slots' }} available
+                                        <?php echo e($available); ?> <?php echo e($available === 1 ? 'slot' : 'slots'); ?> available
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-2">
                                         <div
                                             class="bg-green-500 h-2 rounded-full"
-                                            style="width: {{ ($approvedCount / $expedition->max_participants) * 100 }}%"
+                                            style="width: <?php echo e(($approvedCount / $expedition->max_participants) * 100); ?>%"
                                         ></div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div class="text-xs text-red-600 font-semibold">
                                         🔴 Waitlist Available
                                     </div>
-                                @endif
-                            @else
+                                <?php endif; ?>
+                            <?php else: ?>
                                 <div class="text-xs text-gray-600 font-semibold">
                                     ⛔ Closed
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <!-- View Button -->
                         <a
-                            href="{{ route('expeditions.show', $expedition) }}"
+                            href="<?php echo e(route('expeditions.show', $expedition)); ?>"
                             class="btn-primary w-full text-center block"
                         >
                             View Details
                         </a>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <!-- Pagination -->
             <div class="mb-8">
-                {{ $expeditions->links() }}
+                <?php echo e($expeditions->links()); ?>
+
             </div>
-        @else
+        <?php else: ?>
             <!-- Empty State -->
             <div class="card text-center py-12">
                 <p class="text-2xl font-bold text-gray-600 mb-2">No expeditions found</p>
                 <p class="text-gray-500 mb-4">Try adjusting your filters</p>
-                <a href="{{ route('expeditions.index') }}" class="btn-primary inline-block">
+                <a href="<?php echo e(route('expeditions.index')); ?>" class="btn-primary inline-block">
                     Clear Filters
                 </a>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.member', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\alpine\resources\views/expeditions/index.blade.php ENDPATH**/ ?>

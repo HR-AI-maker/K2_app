@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', 'Apply - ' . $expedition->title)
 
@@ -141,3 +141,4 @@
     </div>
 </div>
 @endsection
+

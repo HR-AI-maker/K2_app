@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class CartController extends Controller
 {
@@ -29,7 +30,7 @@ class CartController extends Controller
     /**
      * Add item to cart
      */
-    public function add(Request $request)
+    public function add(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -38,14 +39,32 @@ class CartController extends Controller
 
         $product = Product::findOrFail($validated['product_id']);
 
+        if (!$product->isAvailable()) {
+            $message = 'This product is not available for purchase.';
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message);
+        }
+
         // Check if already in cart and update quantity
         $cartItem = auth()->user()->cartItems()
             ->where('product_id', $product->id)
             ->first();
 
+        $requestedQuantity = $validated['quantity'] + ($cartItem?->quantity ?? 0);
+        if (!$product->is_unlimited_stock && $requestedQuantity > $product->stock_quantity) {
+            $message = 'Requested quantity exceeds available stock.';
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $message], 422);
+            }
+            return redirect()->back()->with('error', $message);
+        }
+
         if ($cartItem) {
             $cartItem->update([
-                'quantity' => $cartItem->quantity + $validated['quantity'],
+                'quantity' => $requestedQuantity,
+                'price_snapshot' => $product->price,
             ]);
         } else {
             // Add new item to cart
@@ -57,23 +76,55 @@ class CartController extends Controller
             ]);
         }
 
-        return response()->json(['success' => true, 'message' => 'Product added to cart']);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Product added to cart']);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Product added to cart.');
     }
 
     /**
      * Update cart item quantity
      */
-    public function update(Request $request, $cartItem): RedirectResponse
+    public function update(Request $request, CartItem $cartItem): RedirectResponse
     {
-        return redirect()->back();
+        if ($cartItem->user_id !== auth()->id()) {
+            abort(403, 'You do not have permission to update this cart item');
+        }
+
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $product = $cartItem->product;
+        if (!$product || !$product->isAvailable()) {
+            return redirect()->back()->with('error', 'This product is no longer available.');
+        }
+
+        if (!$product->is_unlimited_stock && $validated['quantity'] > $product->stock_quantity) {
+            return redirect()->back()->with('error', 'Requested quantity exceeds available stock.');
+        }
+
+        $cartItem->update([
+            'quantity' => $validated['quantity'],
+            'price_snapshot' => $product->price,
+        ]);
+
+        return redirect()->back()->with('success', 'Cart updated successfully.');
     }
 
     /**
      * Remove item from cart
      */
-    public function remove($cartItem): RedirectResponse
+    public function remove(CartItem $cartItem): RedirectResponse
     {
-        return redirect()->back();
+        if ($cartItem->user_id !== auth()->id()) {
+            abort(403, 'You do not have permission to remove this cart item');
+        }
+
+        $cartItem->delete();
+
+        return redirect()->back()->with('success', 'Item removed from cart.');
     }
 
     /**
@@ -122,6 +173,17 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty');
         }
 
+        // Validate availability and calculate totals
+        foreach ($cartItems as $item) {
+            $product = $item->product;
+            if (!$product || !$product->isAvailable()) {
+                return redirect()->route('cart.index')->with('error', "One or more items are no longer available.");
+            }
+            if (!$product->is_unlimited_stock && $item->quantity > $product->stock_quantity) {
+                return redirect()->route('cart.index')->with('error', "Insufficient stock for {$product->name}.");
+            }
+        }
+
         // Calculate totals
         $subtotal = $cartItems->sum(function ($item) {
             return $item->price_snapshot * $item->quantity;
@@ -134,7 +196,7 @@ class CartController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'order_number' => Order::generateOrderNumber(),
-            'status' => 'pending',
+            'status' => 'payment_pending',
             'subtotal' => $subtotal,
             'tax' => $tax,
             'shipping_fee' => $shipping_fee,
@@ -158,6 +220,10 @@ class CartController extends Controller
                 'total_price' => $item->subtotal,
                 'fulfillment_status' => 'pending',
             ]);
+
+            if (!$item->product->is_unlimited_stock) {
+                $item->product->decrement('stock_quantity', $item->quantity);
+            }
         }
 
         // Clear cart

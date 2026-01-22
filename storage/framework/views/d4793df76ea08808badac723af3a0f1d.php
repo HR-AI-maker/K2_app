@@ -1,13 +1,13 @@
-@extends('layouts.member')
 
-@section('title', 'Upload Documents')
 
-@section('content')
+<?php $__env->startSection('title', 'Upload Documents'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="bg-gray-50 min-h-screen py-12">
     <div class="max-w-3xl mx-auto px-4">
         <!-- Header -->
         <div class="mb-8">
-            <a href="{{ route('dashboard') }}" class="text-blue-600 hover:underline mb-4 inline-block">← Back to Dashboard</a>
+            <a href="<?php echo e(route('dashboard')); ?>" class="text-blue-600 hover:underline mb-4 inline-block">← Back to Dashboard</a>
             <h1 class="text-4xl font-bold text-gray-900">Upload Documents</h1>
             <p class="text-gray-600 mt-2">Submit required documents for verification</p>
         </div>
@@ -16,8 +16,8 @@
         <div class="card mb-8">
             <h2 class="text-2xl font-bold mb-6">📄 Upload New Document</h2>
 
-            <form method="POST" action="{{ route('profile.documents.upload') }}" enctype="multipart/form-data" class="space-y-6">
-                @csrf
+            <form method="POST" action="<?php echo e(route('profile.documents.upload')); ?>" enctype="multipart/form-data" class="space-y-6">
+                <?php echo csrf_field(); ?>
 
                 <!-- Document Type -->
                 <div>
@@ -25,19 +25,33 @@
                     <select
                         name="document_type"
                         id="document_type"
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 @error('document_type') border-red-600 @enderror"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 <?php $__errorArgs = ['document_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-600 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                         required
                     >
                         <option value="">Select document type</option>
-                        <option value="cnic" {{ old('document_type') === 'cnic' ? 'selected' : '' }}>CNIC / ID Card</option>
-                        <option value="passport" {{ old('document_type') === 'passport' ? 'selected' : '' }}>Passport</option>
-                        <option value="visa" {{ old('document_type') === 'visa' ? 'selected' : '' }}>Visa</option>
-                        <option value="insurance" {{ old('document_type') === 'insurance' ? 'selected' : '' }}>Travel Insurance</option>
-                        <option value="medical" {{ old('document_type') === 'medical' ? 'selected' : '' }}>Medical Certificate</option>
+                        <option value="cnic" <?php echo e(old('document_type') === 'cnic' ? 'selected' : ''); ?>>CNIC / ID Card</option>
+                        <option value="passport" <?php echo e(old('document_type') === 'passport' ? 'selected' : ''); ?>>Passport</option>
+                        <option value="visa" <?php echo e(old('document_type') === 'visa' ? 'selected' : ''); ?>>Visa</option>
+                        <option value="insurance" <?php echo e(old('document_type') === 'insurance' ? 'selected' : ''); ?>>Travel Insurance</option>
+                        <option value="medical" <?php echo e(old('document_type') === 'medical' ? 'selected' : ''); ?>>Medical Certificate</option>
                     </select>
-                    @error('document_type')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['document_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-600 text-sm mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- File Upload -->
@@ -66,9 +80,16 @@
                         </button>
                         <p class="text-xs text-gray-600 mt-4">Accepted formats: PDF, JPG, PNG (Max 5MB)</p>
                     </div>
-                    @error('document_file')
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['document_file'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-600 text-sm mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <!-- Submit -->
@@ -87,49 +108,51 @@
         <div class="card">
             <h2 class="text-2xl font-bold mb-6">📋 Your Documents</h2>
 
-            @if ($documents->count() > 0)
+            <?php if($documents->count() > 0): ?>
                 <div class="space-y-4">
-                    @foreach ($documents as $document)
+                    <?php $__currentLoopData = $documents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $document): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="border rounded-lg p-4 hover:bg-gray-50">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
-                                    <p class="font-semibold capitalize">{{ str_replace('_', ' ', $document->document_type) }}</p>
-                                    <p class="text-sm text-gray-600">Uploaded {{ $document->created_at->diffForHumans() }}</p>
+                                    <p class="font-semibold capitalize"><?php echo e(str_replace('_', ' ', $document->document_type)); ?></p>
+                                    <p class="text-sm text-gray-600">Uploaded <?php echo e($document->created_at->diffForHumans()); ?></p>
 
                                     <!-- Verification Status -->
                                     <div class="mt-2">
-                                        @if ($document->verified_at)
+                                        <?php if($document->verified_at): ?>
                                             <span class="badge bg-green-100 text-green-800">
-                                                ✓ Verified {{ $document->verified_at->format('M d, Y') }}
+                                                ✓ Verified <?php echo e($document->verified_at->format('M d, Y')); ?>
+
                                             </span>
-                                        @elseif ($document->rejection_reason)
+                                        <?php elseif($document->rejection_reason): ?>
                                             <span class="badge bg-red-100 text-red-800">
                                                 ✗ Rejected
                                             </span>
-                                            @if ($document->rejection_reason)
+                                            <?php if($document->rejection_reason): ?>
                                                 <p class="text-xs text-red-700 mt-2">
-                                                    <strong>Reason:</strong> {{ $document->rejection_reason }}
+                                                    <strong>Reason:</strong> <?php echo e($document->rejection_reason); ?>
+
                                                 </p>
-                                            @endif
-                                        @else
+                                            <?php endif; ?>
+                                        <?php else: ?>
                                             <span class="badge bg-yellow-100 text-yellow-800">
                                                 ⏳ Pending Review
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
 
                                 <!-- Actions -->
                                 <div class="flex gap-2 ml-4">
-                                    @if ($document->document_url)
-                                        <a href="{{ $document->document_url }}" target="_blank" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+                                    <?php if($document->document_url): ?>
+                                        <a href="<?php echo e($document->document_url); ?>" target="_blank" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
                                             View
                                         </a>
-                                    @endif
-                                    <form method="POST" action="{{ route('profile.documents.delete', $document) }}" class="inline"
+                                    <?php endif; ?>
+                                    <form method="POST" action="<?php echo e(route('profile.documents.delete', $document)); ?>" class="inline"
                                           onsubmit="return confirm('Are you sure? This cannot be undone.');">
-                                        @csrf
-                                        @method('DELETE')
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <button type="submit" class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700">
                                             Delete
                                         </button>
@@ -137,15 +160,15 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="text-center py-12">
                     <p class="text-2xl mb-2">📭</p>
                     <p class="text-gray-600">No documents uploaded yet</p>
                     <p class="text-sm text-gray-500 mt-2">Start by uploading your ID or passport above</p>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
         <!-- Document Requirements -->
@@ -184,5 +207,7 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.member', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\alpine\resources\views/profile/documents.blade.php ENDPATH**/ ?>

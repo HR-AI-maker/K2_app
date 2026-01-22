@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', 'Create Community Post')
 
@@ -192,3 +192,4 @@
     </div>
 </div>
 @endsection
+

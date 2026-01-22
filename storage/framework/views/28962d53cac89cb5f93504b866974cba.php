@@ -1,5 +1,4 @@
 
-
 <?php $__env->startSection('content'); ?>
 <!-- Page Header -->
 <div class="mb-6" style="padding: 1.5rem; background: white; border-radius: 0.5rem; box-shadow: 0 4px 24px 0 rgba(34,41,47,0.1); border: 1px solid #ebe9f1;">
@@ -175,4 +174,4 @@
 <?php endif; ?>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\alpine\resources\views/member/dashboard.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.member', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\alpine\resources\views/member/dashboard.blade.php ENDPATH**/ ?>

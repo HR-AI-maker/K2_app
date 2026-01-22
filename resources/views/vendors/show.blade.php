@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', $vendor->business_name)
 
@@ -205,3 +205,4 @@
     </div>
 </div>
 @endsection
+

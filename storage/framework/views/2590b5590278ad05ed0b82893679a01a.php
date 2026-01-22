@@ -1,38 +1,40 @@
-@extends('layouts.member')
 
-@section('title', 'My Badges')
 
-@section('content')
+<?php $__env->startSection('title', 'My Badges'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="bg-gray-50 min-h-screen py-12">
     <div class="max-w-4xl mx-auto px-4">
         <!-- Header -->
         <div class="mb-8">
-            <a href="{{ route('dashboard') }}" class="text-blue-600 hover:underline mb-4 inline-block">← Back to Dashboard</a>
+            <a href="<?php echo e(route('dashboard')); ?>" class="text-blue-600 hover:underline mb-4 inline-block">← Back to Dashboard</a>
             <h1 class="text-4xl font-bold text-gray-900">🏆 My Badges</h1>
             <p class="text-gray-600 mt-2">Achievements and recognition</p>
         </div>
 
-        @if ($user->badges->count() > 0)
+        <?php if($user->badges->count() > 0): ?>
             <!-- Badges Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                @foreach ($user->badges as $badge)
+                <?php $__currentLoopData = $user->badges; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $badge): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="card text-center hover:shadow-lg transition transform hover:scale-105">
-                        <div class="text-6xl mb-3">{{ $badge->icon_path }}</div>
-                        <h3 class="font-bold text-lg mb-1">{{ $badge->name }}</h3>
+                        <div class="text-6xl mb-3"><?php echo e($badge->icon_path); ?></div>
+                        <h3 class="font-bold text-lg mb-1"><?php echo e($badge->name); ?></h3>
                         <span class="badge inline-block mb-2
-                            @if ($badge->tier === 'bronze') bg-yellow-100 text-yellow-800
-                            @elseif ($badge->tier === 'silver') bg-gray-100 text-gray-800
-                            @elseif ($badge->tier === 'gold') bg-yellow-100 text-yellow-800
-                            @else bg-purple-100 text-purple-800
-                            @endif">
-                            {{ ucfirst($badge->tier) }}
+                            <?php if($badge->tier === 'bronze'): ?> bg-yellow-100 text-yellow-800
+                            <?php elseif($badge->tier === 'silver'): ?> bg-gray-100 text-gray-800
+                            <?php elseif($badge->tier === 'gold'): ?> bg-yellow-100 text-yellow-800
+                            <?php else: ?> bg-purple-100 text-purple-800
+                            <?php endif; ?>">
+                            <?php echo e(ucfirst($badge->tier)); ?>
+
                         </span>
-                        <p class="text-sm text-gray-600 mb-3">{{ $badge->description }}</p>
+                        <p class="text-sm text-gray-600 mb-3"><?php echo e($badge->description); ?></p>
                         <p class="text-xs text-gray-500">
-                            Earned {{ \Carbon\Carbon::parse($badge->pivot->created_at)->format('M d, Y') }}
+                            Earned <?php echo e(\Carbon\Carbon::parse($badge->pivot->created_at)->format('M d, Y')); ?>
+
                         </p>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <!-- Badge Statistics -->
@@ -40,34 +42,34 @@
                 <h2 class="text-2xl font-bold mb-6">📊 Badge Statistics</h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="text-center p-6 border rounded-lg">
-                        <p class="text-4xl font-bold text-blue-600">{{ $user->badges->count() }}</p>
+                        <p class="text-4xl font-bold text-blue-600"><?php echo e($user->badges->count()); ?></p>
                         <p class="text-gray-600 mt-2">Total Earned</p>
                     </div>
                     <div class="text-center p-6 border rounded-lg">
-                        <p class="text-4xl font-bold text-yellow-600">{{ $user->badges->where('tier', 'bronze')->count() }}</p>
+                        <p class="text-4xl font-bold text-yellow-600"><?php echo e($user->badges->where('tier', 'bronze')->count()); ?></p>
                         <p class="text-gray-600 mt-2">Bronze Badges</p>
                     </div>
                     <div class="text-center p-6 border rounded-lg">
-                        <p class="text-4xl font-bold text-gray-400">{{ $user->badges->where('tier', 'silver')->count() }}</p>
+                        <p class="text-4xl font-bold text-gray-400"><?php echo e($user->badges->where('tier', 'silver')->count()); ?></p>
                         <p class="text-gray-600 mt-2">Silver Badges</p>
                     </div>
                     <div class="text-center p-6 border rounded-lg">
-                        <p class="text-4xl font-bold text-yellow-500">{{ $user->badges->where('tier', 'gold')->count() }}</p>
+                        <p class="text-4xl font-bold text-yellow-500"><?php echo e($user->badges->where('tier', 'gold')->count()); ?></p>
                         <p class="text-gray-600 mt-2">Gold Badges</p>
                     </div>
                 </div>
             </div>
-        @else
+        <?php else: ?>
             <!-- No Badges -->
             <div class="card text-center py-16">
                 <p class="text-6xl mb-4">🎯</p>
                 <p class="text-2xl font-bold text-gray-600 mb-2">No Badges Yet</p>
                 <p class="text-gray-500 mb-6">Start participating in activities to earn badges</p>
-                <a href="{{ route('events.index') }}" class="btn-primary inline-block">
+                <a href="<?php echo e(route('events.index')); ?>" class="btn-primary inline-block">
                     Browse Events
                 </a>
             </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Available Badges (locked) -->
         <div class="card">
@@ -81,11 +83,11 @@
                     <h3 class="font-bold text-lg mb-2">First Hike</h3>
                     <p class="text-sm text-gray-600 mb-4">Register for your first event</p>
                     <p class="text-xs text-gray-500">
-                        @if ($user->eventRegistrations->count() > 0)
+                        <?php if($user->eventRegistrations->count() > 0): ?>
                             ✓ Unlocked
-                        @else
+                        <?php else: ?>
                             🔒 Locked
-                        @endif
+                        <?php endif; ?>
                     </p>
                 </div>
 
@@ -95,11 +97,11 @@
                     <h3 class="font-bold text-lg mb-2">Alpine Explorer</h3>
                     <p class="text-sm text-gray-600 mb-4">Complete 5 different expeditions</p>
                     <p class="text-xs text-gray-500">
-                        @if ($user->expeditionApplications->where('status', 'approved')->count() >= 5)
+                        <?php if($user->expeditionApplications->where('status', 'approved')->count() >= 5): ?>
                             ✓ Unlocked
-                        @else
-                            🔒 {{ $user->expeditionApplications->where('status', 'approved')->count() }}/5
-                        @endif
+                        <?php else: ?>
+                            🔒 <?php echo e($user->expeditionApplications->where('status', 'approved')->count()); ?>/5
+                        <?php endif; ?>
                     </p>
                 </div>
 
@@ -109,11 +111,11 @@
                     <h3 class="font-bold text-lg mb-2">Community Builder</h3>
                     <p class="text-sm text-gray-600 mb-4">Create 10 community posts</p>
                     <p class="text-xs text-gray-500">
-                        @if ($user->communityPosts->count() >= 10)
+                        <?php if($user->communityPosts->count() >= 10): ?>
                             ✓ Unlocked
-                        @else
-                            🔒 {{ $user->communityPosts->count() }}/10
-                        @endif
+                        <?php else: ?>
+                            🔒 <?php echo e($user->communityPosts->count()); ?>/10
+                        <?php endif; ?>
                     </p>
                 </div>
 
@@ -123,11 +125,11 @@
                     <h3 class="font-bold text-lg mb-2">Member Elite</h3>
                     <p class="text-sm text-gray-600 mb-4">Achieve Premium membership</p>
                     <p class="text-xs text-gray-500">
-                        @if ($user->membership_tier === 'premium' || $user->membership_tier === 'lifetime')
+                        <?php if($user->membership_tier === 'premium' || $user->membership_tier === 'lifetime'): ?>
                             ✓ Unlocked
-                        @else
+                        <?php else: ?>
                             🔒 Upgrade to unlock
-                        @endif
+                        <?php endif; ?>
                     </p>
                 </div>
 
@@ -184,5 +186,7 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.member', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\xampp\htdocs\alpine\resources\views/profile/badges.blade.php ENDPATH**/ ?>

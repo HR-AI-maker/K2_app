@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title><?php echo e(config('app.name', 'Pak Alpine')); ?> - Vendor <?php echo $__env->yieldContent('title'); ?></title>
+    <title>{{ config('app.name', 'Pak Alpine') }} - Member @yield('title')</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -430,38 +430,37 @@
 </head>
 <body>
     <div class="flex min-h-screen" x-data="{ sidebarOpen: false }">
-        <?php echo $__env->make('vendor.partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        @include('member.partials.sidebar')
 
         <div class="admin-main">
-            <?php echo $__env->make('vendor.partials.navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+            @include('member.partials.navbar')
 
             <main class="admin-content">
-                <?php if($errors->any()): ?>
+                @if ($errors->any())
                     <div class="vuexy-alert vuexy-alert-danger mb-4">
                         <div>
                             <strong>Validation Error</strong>
                             <ul class="mt-2 ml-4 list-disc">
-                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <li><?php echo e($error); ?></li>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
-                <?php endif; ?>
+                @endif
 
-                <?php if(session('success')): ?>
+                @if (session('success'))
                     <div class="vuexy-alert vuexy-alert-success mb-4">
                         <div>
                             <strong>Success</strong>
-                            <p class="mt-1"><?php echo e(session('success')); ?></p>
+                            <p class="mt-1">{{ session('success') }}</p>
                         </div>
                     </div>
-                <?php endif; ?>
+                @endif
 
-                <?php echo $__env->yieldContent('content'); ?>
+                @yield('content')
             </main>
         </div>
     </div>
 </body>
 </html>
-<?php /**PATH D:\xampp\htdocs\alpine\resources\views/layouts/vendor.blade.php ENDPATH**/ ?>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', 'Medical Information')
 
@@ -218,3 +218,4 @@
     </div>
 </div>
 @endsection
+

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.member')
 
 @section('title', 'Edit Profile')
 
@@ -155,3 +155,4 @@
     </div>
 </div>
 @endsection
+
