@@ -6,14 +6,19 @@
                 <a href="<?php echo e(route('home')); ?>">Pak Alpine</a>
             </div>
 
-            <!-- Navigation Links -->
+            <!-- Navigation Links (Only for authenticated users) -->
+            <?php if(auth()->check()): ?>
             <div class="flex gap-8 flex-1">
                 <a href="<?php echo e(route('home')); ?>" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Home</a>
                 <a href="<?php echo e(route('events.index')); ?>" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Events</a>
                 <a href="<?php echo e(route('expeditions.index')); ?>" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Expeditions</a>
                 <a href="<?php echo e(route('community.index')); ?>" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Community</a>
                 <a href="<?php echo e(route('vendors.index')); ?>" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Vendors</a>
+                <a href="<?php echo e(route('marketplace.index')); ?>" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Marketplace</a>
             </div>
+            <?php else: ?>
+            <div class="flex-1"></div>
+            <?php endif; ?>
 
             <!-- Search Bar (visible when authenticated) -->
             <?php if(auth()->check()): ?>
@@ -36,6 +41,17 @@
             <!-- Right Side (Notifications & Profile) -->
             <div class="flex gap-4 flex-shrink-0 items-center">
                 <?php if(auth()->check()): ?>
+                    <!-- Cart Icon -->
+                    <a href="<?php echo e(route('cart.index')); ?>" class="text-2xl hover:text-blue-600 relative">
+                        🛒
+                        <?php if(auth()->user()->cartItems->count() > 0): ?>
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                <?php echo e(auth()->user()->cartItems->sum('quantity')); ?>
+
+                            </span>
+                        <?php endif; ?>
+                    </a>
+
                     <!-- Notifications Bell -->
                     <div class="relative" x-data="{ notifOpen: false }">
                         <button @click="notifOpen = !notifOpen" class="text-2xl hover:text-blue-600 relative">
@@ -61,6 +77,11 @@
                     <div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow z-50 border">
                         <a href="<?php echo e(route('profile.edit')); ?>" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
                         <a href="<?php echo e(route('profile.medical')); ?>" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+                        <a href="<?php echo e(route('orders.index')); ?>" class="block px-4 py-2 hover:bg-gray-100">My Orders</a>
+                        <?php if(auth()->user()->isVendor()): ?>
+                            <a href="<?php echo e(route('vendor.dashboard')); ?>" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-blue-600">Vendor Dashboard</a>
+                            <hr class="my-2">
+                        <?php endif; ?>
                         <?php if(auth()->user()->isAdmin()): ?>
                             <a href="<?php echo e(route('admin.dashboard')); ?>" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-red-600">Admin Panel</a>
                             <hr class="my-2">
@@ -72,7 +93,10 @@
                     </div>
                 </div>
             <?php else: ?>
-                <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Sign In</a>
+                <div class="flex gap-2">
+                    <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700">Sign In</a>
+                    <a href="<?php echo e(route('member.register')); ?>" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Join Now</a>
+                </div>
             <?php endif; ?>
         </div>
     </div>

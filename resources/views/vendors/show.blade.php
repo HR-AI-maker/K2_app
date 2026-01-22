@@ -83,25 +83,6 @@
                     </div>
                 @endif
 
-                <!-- Services Offered -->
-                @if ($vendor->services->count() > 0)
-                    <div class="bg-white rounded-lg shadow p-8">
-                        <h2 class="text-2xl font-bold mb-6">Services Offered</h2>
-
-                        <div class="space-y-3">
-                            @foreach ($vendor->services as $service)
-                                <div class="border-l-4 border-green-500 pl-4 py-2">
-                                    <p class="font-semibold text-gray-900">{{ $service->service_name }}</p>
-                                    <p class="text-sm text-gray-600">{{ $service->description }}</p>
-                                    @if ($service->price)
-                                        <p class="text-sm font-semibold text-green-600 mt-1">PKR {{ number_format($service->price) }}</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-
                 <!-- Contact CTA -->
                 <div class="bg-green-50 border border-green-300 rounded-lg p-8">
                     <h2 class="text-2xl font-bold mb-4 text-green-900">Get in Touch</h2>

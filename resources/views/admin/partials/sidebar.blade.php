@@ -1,66 +1,165 @@
-<aside class="w-64 bg-gray-800 text-white p-4 h-screen overflow-y-auto">
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold">Pak Alpine</h2>
-        <p class="text-sm text-gray-400">Admin Panel</p>
+<aside class="admin-sidebar" x-data="{
+    openMenus: {
+        membership: {{ request()->routeIs('admin.members.*') || request()->routeIs('admin.documents.*') ? 'true' : 'false' }},
+        events: {{ request()->routeIs('admin.events.*') ? 'true' : 'false' }},
+        expeditions: {{ request()->routeIs('admin.expeditions.*') ? 'true' : 'false' }},
+        community: {{ request()->routeIs('admin.community.*') || request()->routeIs('admin.badges.*') ? 'true' : 'false' }},
+        marketplace: {{ request()->routeIs('admin.vendors.*') || request()->routeIs('admin.products.*') || request()->routeIs('admin.orders.*') ? 'true' : 'false' }},
+        system: false
+    }
+}">
+    <!-- Brand Logo -->
+    <div class="sidebar-brand">
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-brand-link">
+            <span class="sidebar-brand-icon">🏔️</span>
+            <div class="sidebar-brand-text">
+                <span class="sidebar-brand-name">Pak Alpine</span>
+                <span class="sidebar-brand-tagline">Admin Portal</span>
+            </div>
+        </a>
     </div>
 
-    <nav class="space-y-2">
-        <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 rounded {{ request()->routeIs('admin.dashboard') ? 'bg-blue-600' : 'hover:bg-gray-700' }}">
-            📊 Dashboard
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+        <!-- Dashboard -->
+        <a href="{{ route('admin.dashboard') }}" class="sidebar-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <span class="sidebar-item-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </span>
+            <span class="sidebar-item-text">Dashboard</span>
         </a>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">MEMBERSHIP</p>
-            <a href="{{ route('admin.members.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 @active(Route::currentRouteName() === 'admin.members.index' || Route::currentRouteName() === 'admin.members.show')">👥 Manage Members</a>
-            <a href="{{ route('admin.members.index', ['status' => 'pending']) }}" class="block px-4 py-2 rounded hover:bg-gray-700">✓ Pending Verification</a>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">📋 Membership Tiers</a>
+        <div class="sidebar-section-title">Apps & Pages</div>
+
+        <!-- Membership -->
+        <div class="sidebar-menu">
+            <button @click="openMenus.membership = !openMenus.membership" class="sidebar-item" :class="{ 'active': openMenus.membership }">
+                <span class="sidebar-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </span>
+                <span class="sidebar-item-text">Membership</span>
+                <span class="sidebar-item-arrow" :class="{ 'rotate-90': openMenus.membership }">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+            </button>
+            <div x-show="openMenus.membership" x-collapse class="sidebar-submenu">
+                <a href="{{ route('admin.members.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.members.index') && !request()->has('status') ? 'active' : '' }}">All Members</a>
+                <a href="{{ route('admin.members.index', ['status' => 'pending']) }}" class="sidebar-subitem {{ request()->routeIs('admin.members.index') && request()->get('status') === 'pending' ? 'active' : '' }}">Pending Verification</a>
+                <a href="{{ route('admin.documents.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.documents.index') && !request()->has('status') ? 'active' : '' }}">Documents</a>
+                <a href="{{ route('admin.documents.index', ['status' => 'pending']) }}" class="sidebar-subitem {{ request()->routeIs('admin.documents.index') && request()->get('status') === 'pending' ? 'active' : '' }}">Pending Review</a>
+            </div>
         </div>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">VERIFICATION</p>
-            <a href="{{ route('admin.documents.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.documents.*') ? 'bg-blue-600' : '' }}">📄 Documents</a>
-            <a href="{{ route('admin.documents.index', ['status' => 'pending']) }}" class="block px-4 py-2 rounded hover:bg-gray-700">⏳ Pending Review</a>
+        <!-- Events -->
+        <div class="sidebar-menu">
+            <button @click="openMenus.events = !openMenus.events" class="sidebar-item" :class="{ 'active': openMenus.events }">
+                <span class="sidebar-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </span>
+                <span class="sidebar-item-text">Events</span>
+                <span class="sidebar-item-arrow" :class="{ 'rotate-90': openMenus.events }">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+            </button>
+            <div x-show="openMenus.events" x-collapse class="sidebar-submenu">
+                <a href="{{ route('admin.events.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.events.index') ? 'active' : '' }}">All Events</a>
+                <a href="{{ route('admin.events.create') }}" class="sidebar-subitem {{ request()->routeIs('admin.events.create') ? 'active' : '' }}">Create Event</a>
+                <a href="{{ route('admin.events.index', ['event_type' => 'training']) }}" class="sidebar-subitem">Training Sessions</a>
+            </div>
         </div>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">EVENTS</p>
-            <a href="{{ route('admin.events.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.events.*') ? 'bg-blue-600' : '' }}">📅 All Events</a>
-            <a href="{{ route('admin.events.create') }}" class="block px-4 py-2 rounded hover:bg-gray-700">➕ Create Event</a>
-            <a href="{{ route('admin.events.index', ['event_type' => 'training']) }}" class="block px-4 py-2 rounded hover:bg-gray-700">🎓 Trainings</a>
+        <!-- Expeditions -->
+        <div class="sidebar-menu">
+            <button @click="openMenus.expeditions = !openMenus.expeditions" class="sidebar-item" :class="{ 'active': openMenus.expeditions }">
+                <span class="sidebar-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                </span>
+                <span class="sidebar-item-text">Expeditions</span>
+                <span class="sidebar-item-arrow" :class="{ 'rotate-90': openMenus.expeditions }">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+            </button>
+            <div x-show="openMenus.expeditions" x-collapse class="sidebar-submenu">
+                <a href="{{ route('admin.expeditions.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.expeditions.index') ? 'active' : '' }}">All Expeditions</a>
+                <a href="{{ route('admin.expeditions.create') }}" class="sidebar-subitem {{ request()->routeIs('admin.expeditions.create') ? 'active' : '' }}">Create Expedition</a>
+            </div>
         </div>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">EXPEDITIONS</p>
-            <a href="{{ route('admin.expeditions.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.expeditions.*') ? 'bg-blue-600' : '' }}">🏔️ All Expeditions</a>
-            <a href="{{ route('admin.expeditions.create') }}" class="block px-4 py-2 rounded hover:bg-gray-700">➕ Create Expedition</a>
+        <!-- Community -->
+        <div class="sidebar-menu">
+            <button @click="openMenus.community = !openMenus.community" class="sidebar-item" :class="{ 'active': openMenus.community }">
+                <span class="sidebar-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                </span>
+                <span class="sidebar-item-text">Community</span>
+                <span class="sidebar-item-arrow" :class="{ 'rotate-90': openMenus.community }">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+            </button>
+            <div x-show="openMenus.community" x-collapse class="sidebar-submenu">
+                <a href="{{ route('admin.community.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.community.index') ? 'active' : '' }}">Moderate Posts</a>
+                <a href="{{ route('admin.community.index', ['status' => 'draft']) }}" class="sidebar-subitem">Pending Review</a>
+                <a href="{{ route('admin.badges.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.badges.*') ? 'active' : '' }}">Badges</a>
+            </div>
         </div>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">SAFETY & RESCUE</p>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">🚨 Emergency Reports</a>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">🗺️ Trip Records</a>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">⚠️ Hazard Alerts</a>
+        <!-- Marketplace -->
+        <div class="sidebar-menu">
+            <button @click="openMenus.marketplace = !openMenus.marketplace" class="sidebar-item" :class="{ 'active': openMenus.marketplace }">
+                <span class="sidebar-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </span>
+                <span class="sidebar-item-text">Marketplace</span>
+                <span class="sidebar-item-arrow" :class="{ 'rotate-90': openMenus.marketplace }">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+            </button>
+            <div x-show="openMenus.marketplace" x-collapse class="sidebar-submenu">
+                <a href="{{ route('admin.vendors.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.vendors.index') && !request()->has('status') ? 'active' : '' }}">All Vendors</a>
+                <a href="{{ route('admin.vendors.index', ['status' => 'pending']) }}" class="sidebar-subitem {{ request()->routeIs('admin.vendors.index') && request()->get('status') === 'pending' ? 'active' : '' }}">Pending Vendors</a>
+                <a href="{{ route('admin.products.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">Products</a>
+                <a href="{{ route('admin.orders.index') }}" class="sidebar-subitem {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">Orders</a>
+            </div>
         </div>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">COMMUNITY</p>
-            <a href="{{ route('admin.community.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.community.*') ? 'bg-blue-600' : '' }}">📢 Moderate Posts</a>
-            <a href="{{ route('admin.community.index', ['status' => 'draft']) }}" class="block px-4 py-2 rounded hover:bg-gray-700">⏳ Pending Review</a>
-            <a href="{{ route('admin.badges.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.badges.*') ? 'bg-blue-600' : '' }}">🏆 Badges</a>
+        <div class="sidebar-section-title">System</div>
+
+        <!-- System -->
+        <div class="sidebar-menu">
+            <button @click="openMenus.system = !openMenus.system" class="sidebar-item" :class="{ 'active': openMenus.system }">
+                <span class="sidebar-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </span>
+                <span class="sidebar-item-text">Settings</span>
+                <span class="sidebar-item-arrow" :class="{ 'rotate-90': openMenus.system }">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </span>
+            </button>
+            <div x-show="openMenus.system" x-collapse class="sidebar-submenu">
+                <a href="#" class="sidebar-subitem">Payments</a>
+                <a href="#" class="sidebar-subitem">Reports</a>
+                <a href="#" class="sidebar-subitem">General Settings</a>
+                <a href="#" class="sidebar-subitem">Audit Logs</a>
+            </div>
         </div>
 
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">MARKETPLACE</p>
-            <a href="{{ route('admin.vendors.index') }}" class="block px-4 py-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.vendors.*') ? 'bg-blue-600' : '' }}">🏪 Vendors</a>
-            <a href="{{ route('admin.vendors.index', ['status' => 'pending']) }}" class="block px-4 py-2 rounded hover:bg-gray-700">⏳ Pending Vendors</a>
-        </div>
-
-        <div class="mt-6">
-            <p class="px-4 py-2 text-gray-400 font-semibold text-sm">SYSTEM</p>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">💰 Payments</a>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">📊 Reports</a>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">⚙️ Settings</a>
-            <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">📝 Audit Logs</a>
-        </div>
+        <!-- Emergency -->
+        <a href="#" class="sidebar-item sidebar-item-danger">
+            <span class="sidebar-item-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </span>
+            <span class="sidebar-item-text">Emergency Center</span>
+        </a>
     </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="sidebar-user-avatar">{{ substr(auth()->user()->first_name, 0, 1) }}{{ substr(auth()->user()->last_name, 0, 1) }}</div>
+            <div class="sidebar-user-info">
+                <span class="sidebar-user-name">{{ auth()->user()->full_name }}</span>
+                <span class="sidebar-user-role">Administrator</span>
+            </div>
+        </div>
+    </div>
 </aside>

@@ -46,7 +46,7 @@ class VendorsController extends Controller
         }
 
         // Paginate
-        $vendors = $query->with('services', 'verifiedBy')->paginate(12);
+        $vendors = $query->with('verifiedBy')->paginate(12);
 
         // Get distinct regions for filter
         $regions = Vendor::where('status', 'verified')
@@ -75,7 +75,7 @@ class VendorsController extends Controller
             abort(404);
         }
 
-        $vendor->load('services', 'verifiedBy');
+        $vendor->load('verifiedBy');
 
         return view('vendors.show', [
             'vendor' => $vendor,

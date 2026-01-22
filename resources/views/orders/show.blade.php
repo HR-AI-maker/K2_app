@@ -1,0 +1,137 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="{{ route('orders.index') }}" class="text-blue-600 hover:text-blue-800 mb-6">&larr; Back to Orders</a>
+
+        <!-- Order Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-gray-600">Order Number</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ $order->order_number }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-gray-600">Order Date</p>
+                    <p class="text-lg font-semibold text-gray-900">{{ $order->created_at->format('d M Y \a\t H:i') }}</p>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-gray-600 mb-2">Status</p>
+                <span class="inline-block px-4 py-2 rounded-full text-sm font-medium
+                    @if($order->status === 'pending') bg-yellow-100 text-yellow-800
+                    @elseif($order->status === 'payment_pending') bg-orange-100 text-orange-800
+                    @elseif($order->status === 'paid') bg-blue-100 text-blue-800
+                    @elseif($order->status === 'processing') bg-blue-100 text-blue-800
+                    @elseif($order->status === 'shipped') bg-purple-100 text-purple-800
+                    @elseif($order->status === 'delivered') bg-green-100 text-green-800
+                    @elseif($order->status === 'cancelled') bg-red-100 text-red-800
+                    @else bg-gray-100 text-gray-800
+                    @endif
+                ">
+                    {{ ucfirst(str_replace('_', ' ', $order->status)) }}
+                </span>
+
+                @if($order->payment_verified_at)
+                    <p class="text-sm text-green-600 mt-3">
+                        ✓ Payment verified on {{ $order->payment_verified_at->format('d M Y') }}
+                    </p>
+                @endif
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Order Items</h2>
+
+            <div class="space-y-4">
+                @foreach($order->items as $item)
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-200 last:border-0 last:pb-0">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900">{{ $item->product_name }}</h3>
+                            <p class="text-sm text-gray-600">Vendor: {{ $item->vendor->business_name }}</p>
+                            <p class="text-sm text-gray-600">
+                                Fulfillment Status:
+                                <span class="inline-block px-2 py-1 rounded text-xs font-medium
+                                    @if($item->fulfillment_status === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif($item->fulfillment_status === 'processing') bg-blue-100 text-blue-800
+                                    @elseif($item->fulfillment_status === 'shipped') bg-purple-100 text-purple-800
+                                    @elseif($item->fulfillment_status === 'delivered') bg-green-100 text-green-800
+                                    @endif
+                                ">
+                                    {{ ucfirst($item->fulfillment_status) }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-600">{{ $item->quantity }} x Rs. {{ number_format($item->unit_price, 0) }}</p>
+                            <p class="text-lg font-semibold text-gray-900">Rs. {{ number_format($item->total_price, 0) }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Shipping & Payment Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Shipping Address -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Shipping Address</h2>
+                <p class="text-gray-700 whitespace-pre-wrap">{{ $order->shipping_address }}</p>
+                <p class="text-gray-600 mt-3">Phone: {{ $order->shipping_phone }}</p>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span>Rs. {{ number_format($order->subtotal, 0) }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Tax</span>
+                        <span>Rs. {{ number_format($order->tax, 0) }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Shipping</span>
+                        <span>Rs. {{ number_format($order->shipping_fee, 0) }}</span>
+                    </div>
+                    <div class="border-t border-gray-300 pt-3 flex justify-between text-lg font-bold">
+                        <span>Total</span>
+                        <span class="text-blue-600">Rs. {{ number_format($order->total, 0) }}</span>
+                    </div>
+
+                    @if($order->amount_paid > 0)
+                        <div class="border-t border-gray-300 pt-3 flex justify-between text-gray-700">
+                            <span>Amount Paid</span>
+                            <span>Rs. {{ number_format($order->amount_paid, 0) }}</span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Special Notes -->
+        @if($order->notes)
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">Special Notes</h2>
+                <p class="text-gray-700 whitespace-pre-wrap">{{ $order->notes }}</p>
+            </div>
+        @endif
+
+        <!-- Actions -->
+        @if(in_array($order->status, ['pending', 'payment_pending']))
+            <form method="POST" action="{{ route('orders.cancel', $order) }}" class="inline" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                @csrf
+                <button type="submit" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                    Cancel Order
+                </button>
+            </form>
+        @endif
+    </div>
+</div>
+@endsection

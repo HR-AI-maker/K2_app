@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -122,5 +123,59 @@ class User extends Authenticatable
     public function badges()
     {
         return $this->belongsToMany(Badge::class, 'user_badges');
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function managedVendor()
+    {
+        return $this->hasOne(Vendor::class, 'vendor_user_id');
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->managedVendor()->exists() && $this->managedVendor->can_sell;
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function membershipTransactions()
+    {
+        return $this->hasMany(MembershipTransaction::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
+    public function permissions()
+    {
+        return $this->hasManyThrough(Permission::class, Role::class, 'id', 'id', 'role_id', 'id');
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return DB::table('role_permissions')
+            ->join('permissions', 'role_permissions.permission_id', '=', 'permissions.id')
+            ->where('role_permissions.role_id', DB::table('roles')->where('name', $this->role)->first()->id ?? 0)
+            ->where('permissions.name', $permission)
+            ->exists();
     }
 }

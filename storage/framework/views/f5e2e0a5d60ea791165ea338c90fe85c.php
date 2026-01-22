@@ -53,6 +53,8 @@
             <p class="px-4 py-2 text-gray-400 font-semibold text-sm">MARKETPLACE</p>
             <a href="<?php echo e(route('admin.vendors.index')); ?>" class="block px-4 py-2 rounded hover:bg-gray-700 <?php echo e(request()->routeIs('admin.vendors.*') ? 'bg-blue-600' : ''); ?>">🏪 Vendors</a>
             <a href="<?php echo e(route('admin.vendors.index', ['status' => 'pending'])); ?>" class="block px-4 py-2 rounded hover:bg-gray-700">⏳ Pending Vendors</a>
+            <a href="<?php echo e(route('admin.products.index')); ?>" class="block px-4 py-2 rounded hover:bg-gray-700 <?php echo e(request()->routeIs('admin.products.*') ? 'bg-blue-600' : ''); ?>">📦 Product Moderation</a>
+            <a href="<?php echo e(route('admin.orders.index')); ?>" class="block px-4 py-2 rounded hover:bg-gray-700 <?php echo e(request()->routeIs('admin.orders.*') ? 'bg-blue-600' : ''); ?>">🛒 Orders</a>
         </div>
 
         <div class="mt-6">

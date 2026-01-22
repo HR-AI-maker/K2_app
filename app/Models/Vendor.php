@@ -36,8 +36,18 @@ class Vendor extends Model
         return $this->belongsTo(User::class, 'verified_by');
     }
 
-    public function services()
+    public function products()
     {
-        return $this->hasMany(VendorService::class);
+        return $this->hasMany(Product::class);
+    }
+
+    public function vendorUser()
+    {
+        return $this->belongsTo(User::class, 'vendor_user_id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

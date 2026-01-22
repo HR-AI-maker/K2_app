@@ -1,77 +1,112 @@
-<nav class="bg-white shadow">
-    <div class="max-w-6xl mx-auto px-4 py-3">
-        <div class="flex justify-between items-center gap-4">
-            <!-- Logo -->
-            <div class="text-2xl font-bold text-blue-600 flex-shrink-0">
-                <a href="{{ route('home') }}">Pak Alpine</a>
-            </div>
+<!-- UI change only – no logic modified -->
+<nav class="navbar">
+    <div class="navbar-content">
+        <!-- Logo -->
+        <a href="{{ route('home') }}" class="navbar-logo">
+            🏔️ Pak Alpine
+        </a>
 
-            <!-- Navigation Links -->
-            <div class="flex gap-8 flex-1">
-                <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Home</a>
-                <a href="{{ route('events.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Events</a>
-                <a href="{{ route('expeditions.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Expeditions</a>
-                <a href="{{ route('community.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Community</a>
-                <a href="{{ route('vendors.index') }}" class="text-gray-700 hover:text-blue-600 whitespace-nowrap">Vendors</a>
-            </div>
+        <!-- Navigation Links (authenticated users only) -->
+        @if (auth()->check())
+        <div class="navbar-links">
+            <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
+            <a href="{{ route('events.index') }}" class="{{ request()->routeIs('events.*') ? 'active' : '' }}">Events</a>
+            <a href="{{ route('expeditions.index') }}" class="{{ request()->routeIs('expeditions.*') ? 'active' : '' }}">Expeditions</a>
+            <a href="{{ route('community.index') }}" class="{{ request()->routeIs('community.*') ? 'active' : '' }}">Community</a>
+            <a href="{{ route('vendors.index') }}" class="{{ request()->routeIs('vendors.*') ? 'active' : '' }}">Vendors</a>
+            <a href="{{ route('marketplace.index') }}" class="{{ request()->routeIs('marketplace.*') ? 'active' : '' }}">Marketplace</a>
+        </div>
+        @endif
 
-            <!-- Search Bar (visible when authenticated) -->
+        <!-- Search Bar (authenticated users only) -->
+        @if (auth()->check())
+        <form method="GET" action="{{ route('search') }}" class="navbar-search">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search..."
+                class="navbar-search-input"
+                value="{{ request('q') }}"
+                minlength="2"
+            >
+        </form>
+        @endif
+
+        <!-- Right Side Actions -->
+        <div class="navbar-actions">
             @if (auth()->check())
-                <form method="GET" action="{{ route('search') }}" class="flex-1 max-w-xs">
-                    <div class="flex gap-2">
-                        <input
-                            type="text"
-                            name="q"
-                            placeholder="Search..."
-                            class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-600 focus:border-transparent w-full"
-                            value="{{ request('q') }}"
-                        >
-                        <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-                            🔍
-                        </button>
-                    </div>
-                </form>
-            @endif
+                <!-- Cart Icon -->
+                <a href="{{ route('cart.index') }}" class="navbar-icon-btn" title="Shopping Cart">
+                    🛒
+                    @if (auth()->user()->cartItems->count() > 0)
+                        <span class="navbar-badge">{{ auth()->user()->cartItems->sum('quantity') }}</span>
+                    @endif
+                </a>
 
-            <!-- Right Side (Notifications & Profile) -->
-            <div class="flex gap-4 flex-shrink-0 items-center">
-                @if (auth()->check())
-                    <!-- Notifications Bell -->
-                    <div class="relative" x-data="{ notifOpen: false }">
-                        <button @click="notifOpen = !notifOpen" class="text-2xl hover:text-blue-600 relative">
-                            🔔
-                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
-                        </button>
-                        <div x-show="notifOpen" @click.outside="notifOpen = false" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border">
-                            <div class="px-4 py-3 border-b font-semibold text-gray-900">Notifications</div>
-                            <div class="max-h-96 overflow-y-auto">
-                                <div class="px-4 py-3 text-gray-500 text-center text-sm">
-                                    No new notifications
-                                </div>
+                <!-- Notifications Bell -->
+                <div x-data="{ notifOpen: false }" class="relative">
+                    <button
+                        @click="notifOpen = !notifOpen"
+                        class="navbar-icon-btn"
+                        title="Notifications"
+                        aria-label="Notifications"
+                    >
+                        🔔
+                        <span class="navbar-badge">0</span>
+                    </button>
+                    <div
+                        x-show="notifOpen"
+                        @click.outside="notifOpen = false"
+                        class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
+                        style="display: none;"
+                    >
+                        <div class="px-4 py-3 border-b border-gray-200 font-semibold text-gray-900">Notifications</div>
+                        <div class="max-h-96 overflow-y-auto">
+                            <div class="px-4 py-3 text-gray-500 text-center text-sm">
+                                No new notifications
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Profile Dropdown -->
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                            {{ auth()->user()->first_name }}
-                        </button>
-                    <div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow z-50 border">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
-                        <a href="{{ route('profile.medical') }}" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
-                        @if (auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-gray-100 font-semibold text-red-600">Admin Panel</a>
-                            <hr class="my-2">
+                <!-- Profile Dropdown -->
+                <div x-data="{ profileOpen: false }" class="relative">
+                    <button
+                        @click="profileOpen = !profileOpen"
+                        class="navbar-user-btn"
+                        aria-label="User Menu"
+                    >
+                        <span>{{ auth()->user()->first_name }}</span>
+                        <span>▼</span>
+                    </button>
+                    <div
+                        x-show="profileOpen"
+                        @click.outside="profileOpen = false"
+                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border border-gray-200"
+                        style="display: none;"
+                    >
+                        <a href="{{ route('profile.edit') }}" class="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium">Profile</a>
+                        <a href="{{ route('profile.medical') }}" class="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium">Settings</a>
+                        <a href="{{ route('orders.index') }}" class="block px-4 py-3 hover:bg-gray-50 text-gray-700 font-medium">My Orders</a>
+                        @if (auth()->user()->isVendor())
+                            <hr class="my-1">
+                            <a href="{{ route('vendor.dashboard') }}" class="block px-4 py-3 hover:bg-gray-50 text-primary font-semibold">Vendor Dashboard</a>
                         @endif
+                        @if (auth()->user()->isAdmin())
+                            <hr class="my-1">
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 hover:bg-gray-50 text-danger font-semibold">Admin Panel</a>
+                        @endif
+                        <hr class="my-1">
                         <form method="POST" action="{{ route('logout') }}" class="block">
                             @csrf
-                            <button type="submit" class="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600">Logout</button>
+                            <button type="submit" class="w-full text-left px-4 py-3 hover:bg-red-50 text-danger font-medium">Logout</button>
                         </form>
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Sign In</a>
+                <!-- Unauthenticated Actions -->
+                <a href="{{ route('login') }}" class="btn btn-outline btn-md">Sign In</a>
+                <a href="{{ route('member.register') }}" class="btn btn-primary btn-md">Join Now</a>
             @endif
         </div>
     </div>

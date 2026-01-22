@@ -4,7 +4,14 @@
       "Bash(php artisan:*)",
       "Bash(test:*)",
       "Bash(php:*)",
-      "Bash(php -l:*)"
+      "Bash(php -l:*)",
+      "Bash(git add:*)",
+      "Bash(git clean:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:demos.pixinvent.com)",
+      "Bash(xargs cat:*)"
     ]
   }
 }

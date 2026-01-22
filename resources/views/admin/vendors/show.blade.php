@@ -83,24 +83,6 @@
             </div>
         @endif
 
-        <!-- Services -->
-        @if ($vendor->services->count() > 0)
-            <div class="bg-white rounded-lg shadow p-8">
-                <h2 class="text-2xl font-bold mb-6">Services</h2>
-
-                <div class="space-y-3">
-                    @foreach ($vendor->services as $service)
-                        <div class="border-l-4 border-green-500 pl-4 py-2">
-                            <p class="font-semibold">{{ $service->service_name }}</p>
-                            <p class="text-sm text-gray-600">{{ $service->description }}</p>
-                            @if ($service->price)
-                                <p class="text-sm font-semibold text-green-600 mt-1">PKR {{ number_format($service->price) }}</p>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
     </div>
 
     <!-- Sidebar -->
@@ -193,6 +175,63 @@
                 </div>
             </form>
         </div>
+
+        <!-- Vendor Login Credentials -->
+        @if ($vendor->status === 'verified')
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 @if($vendor->vendor_user_id) border-l-green-500 @else border-l-orange-500 @endif">
+                <h3 class="text-lg font-bold mb-4">Login Credentials</h3>
+
+                @if ($vendor->vendor_user_id)
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <p class="text-sm text-green-800">
+                            ✓ <span class="font-semibold">Credentials Created</span>
+                        </p>
+                        <p class="text-xs text-green-700 mt-1">Vendor can now log in and manage their marketplace products</p>
+                    </div>
+                @else
+                    <form method="POST" action="{{ route('admin.vendors.createCredentials', $vendor) }}" class="space-y-3">
+                        @csrf
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Vendor Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="vendor@example.com"
+                                required
+                            >
+                            @error('email')
+                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="••••••••"
+                                minlength="8"
+                                required
+                            >
+                            @error('password')
+                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                            <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 font-semibold"
+                        >
+                            🔑 Create Vendor Account
+                        </button>
+                    </form>
+                @endif
+            </div>
+        @endif
 
         <!-- Verification Info -->
         @if ($vendor->verified_at)
