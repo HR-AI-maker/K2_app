@@ -15,22 +15,46 @@ class ProductsController extends Controller
      */
     public function index(): View
     {
-        $pendingProducts = Product::where('status', 'pending')
-            ->with('vendor')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'pending');
+        $currentStatus = request('status', 'all');
+        $currentCategory = request('category', '');
 
-        $publishedProducts = Product::where('status', 'published')
-            ->with('vendor')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'published');
+        $query = Product::with('vendor');
 
-        $rejectedProducts = Product::where('status', 'rejected')
-            ->with('vendor')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10, ['*'], 'rejected');
+        if ($currentStatus !== 'all') {
+            $query->where('status', $currentStatus);
+        }
 
-        return view('admin.products.index', compact('pendingProducts', 'publishedProducts', 'rejectedProducts'));
+        if ($currentCategory !== '') {
+            $query->where('category', $currentCategory);
+        }
+
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function ($builder) use ($search) {
+                $builder->where('name', 'like', '%' . $search . '%')
+                    ->orWhereHas('vendor', function ($vendorQuery) use ($search) {
+                        $vendorQuery->where('business_name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        $allowedSorts = ['created_at', 'price', 'sales_count'];
+        $sortBy = request('sort_by', 'created_at');
+        $sortBy = in_array($sortBy, $allowedSorts, true) ? $sortBy : 'created_at';
+
+        $sortOrder = request('sort_order', 'desc') === 'asc' ? 'asc' : 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+
+        $products = $query->paginate(10)->withQueryString();
+
+        $stats = [
+            'pending' => Product::where('status', 'pending')->count(),
+            'published' => Product::where('status', 'published')->count(),
+            'rejected' => Product::where('status', 'rejected')->count(),
+            'total' => Product::count(),
+        ];
+
+        return view('admin.products.index', compact('products', 'stats', 'currentStatus', 'currentCategory'));
     }
 
     /**
