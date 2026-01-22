@@ -63,7 +63,7 @@
         <div class="authentication-inner row m-0">
             <div class="d-none d-xl-flex col-xl-8 p-0">
                 <div class="auth-cover-bg d-flex justify-content-center align-items-center">
-                    <img src="https://demos.pixinvent.com/vuexy-html-laravel-admin-template/demo/assets/img/illustrations/auth-login-illustration-light.png"
+                    <img src="https://static.vecteezy.com/system/resources/thumbnails/038/967/730/small/mountain-climbing-route-to-peak-png.png"
                         alt="auth-login-cover" class="my-5 auth-illustration"
                         data-app-light-img="illustrations/auth-login-illustration-light.png"
                         data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
