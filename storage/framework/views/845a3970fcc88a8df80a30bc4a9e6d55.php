@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
 
-    <title>{{ config('app.name', 'Pak Alpine') }} - Admin @yield('title')</title>
+    <title><?php echo e(config('app.name', 'Pak Alpine')); ?> - Admin <?php echo $__env->yieldContent('title'); ?></title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -510,6 +510,7 @@
             display: flex;
             flex-direction: column;
             width: 100%;
+
         }
 
         .admin-content {
@@ -861,42 +862,43 @@
 <body>
     <div class="flex min-h-screen" x-data="{ sidebarOpen: false }">
         <!-- Sidebar -->
-        @include('admin.partials.sidebar')
+        <?php echo $__env->make('admin.partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         <!-- Main Content -->
         <div class="admin-main">
             <!-- Admin Navigation -->
-            @include('admin.partials.navbar')
+            <?php echo $__env->make('admin.partials.navbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
             <!-- Page Content -->
             <main class="admin-content">
-                @if ($errors->any())
+                <?php if($errors->any()): ?>
                     <div class="vuexy-alert vuexy-alert-danger mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                         <div>
                             <strong>Validation Error</strong>
                             <ul class="mt-2 ml-4 list-disc">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                         </div>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if (session('success'))
+                <?php if(session('success')): ?>
                     <div class="vuexy-alert vuexy-alert-success mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                         <div>
                             <strong>Success</strong>
-                            <p class="mt-1">{{ session('success') }}</p>
+                            <p class="mt-1"><?php echo e(session('success')); ?></p>
                         </div>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @yield('content')
+                <?php echo $__env->yieldContent('content'); ?>
             </main>
         </div>
     </div>
 </body>
 </html>
+<?php /**PATH D:\xampp\htdocs\alpine\resources\views/layouts/admin.blade.php ENDPATH**/ ?>
