@@ -9,11 +9,13 @@ return new class extends Migration {
     {
         Schema::create('otp_verifications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('otp');
-            $table->string('type')->nullable(); // login, reset, verify
+            $table->string('email');
+            $table->string('phone');
+            $table->string('otp_code');
+            $table->string('purpose')->default('email_verification'); // email_verification, login, reset
             $table->timestamp('expires_at');
-            $table->boolean('is_used')->default(false);
+            $table->boolean('is_verified')->default(false);
+            $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });
     }

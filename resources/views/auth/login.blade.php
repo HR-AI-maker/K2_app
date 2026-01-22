@@ -63,14 +63,9 @@
         <div class="authentication-inner row m-0">
             <div class="d-none d-xl-flex col-xl-8 p-0">
                 <div class="auth-cover-bg d-flex justify-content-center align-items-center">
-                    <img src="https://demos.pixinvent.com/vuexy-html-laravel-admin-template/demo/assets/img/illustrations/auth-login-illustration-light.png"
-                        alt="auth-login-cover" class="my-5 auth-illustration"
-                        data-app-light-img="illustrations/auth-login-illustration-light.png"
-                        data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
-                    <img src="https://demos.pixinvent.com/vuexy-html-laravel-admin-template/demo/assets/img/illustrations/bg-shape-image-light.png"
-                        alt="auth-login-cover" class="platform-bg"
-                        data-app-light-img="illustrations/bg-shape-image-light.png"
-                        data-app-dark-img="illustrations/bg-shape-image-dark.png" />
+                    <img src="{{ asset('images/mountain-climbing.png') }}"
+                        alt="mountain-climbing" class="my-5 auth-illustration"
+                        style="max-width: 100%; height: auto;" />
                 </div>
             </div>
 

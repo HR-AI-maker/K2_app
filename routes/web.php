@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\OrdersController as AdminOrdersController;
 use App\Http\Controllers\Auth\MemberRegistrationController;
 use App\Http\Controllers\DashboardRedirectController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
+use App\Http\Controllers\AdminMemberController;
 
 // Landing page (not authenticated)
 Route::get('/', function () {
@@ -185,14 +186,13 @@ Route::middleware('auth')->group(function () {
 
         // Members management
         Route::prefix('members')->name('members.')->group(function () {
-            Route::get('/', [MembersController::class, 'index'])->name('index');
-            Route::get('/{user}', [MembersController::class, 'show'])->name('show');
-            Route::get('/{user}/edit', [MembersController::class, 'edit'])->name('edit');
-            Route::patch('/{user}', [MembersController::class, 'update'])->name('update');
-            Route::post('/{user}/verify', [MembersController::class, 'verify'])->name('verify');
-            Route::post('/{user}/suspend', [MembersController::class, 'suspend'])->name('suspend');
-            Route::post('/{user}/reactivate', [MembersController::class, 'reactivate'])->name('reactivate');
-            Route::delete('/{user}', [MembersController::class, 'destroy'])->name('destroy');
+            Route::get('/', [AdminMemberController::class, 'index'])->name('index');
+            Route::get('/create', [AdminMemberController::class, 'create'])->name('create');
+            Route::post('/', [AdminMemberController::class, 'store'])->name('store');
+            Route::get('/{user}', [AdminMemberController::class, 'show'])->name('show');
+            Route::get('/{user}/edit', [AdminMemberController::class, 'edit'])->name('edit');
+            Route::patch('/{user}', [AdminMemberController::class, 'update'])->name('update');
+            Route::delete('/{user}', [AdminMemberController::class, 'destroy'])->name('destroy');
         });
 
         // Document verification

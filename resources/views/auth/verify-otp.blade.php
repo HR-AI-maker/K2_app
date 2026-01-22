@@ -23,6 +23,23 @@
             </div>
         @endif
 
+        <!-- Testing Mode - Display Dummy OTP -->
+        @if ($showTestOtp && $testOtp)
+            <div class="mb-6 p-4 bg-yellow-50 border-2 border-yellow-400 rounded-lg">
+                <div class="flex items-start gap-3">
+                    <span class="text-xl">🧪</span>
+                    <div class="flex-1">
+                        <p class="font-semibold text-yellow-900">Testing Mode: Dummy OTP</p>
+                        <p class="text-sm text-yellow-700 mt-1">Copy and use the code below for testing:</p>
+                        <div class="mt-3 bg-white rounded-lg p-3 border border-yellow-300">
+                            <code class="text-2xl font-bold text-yellow-900 tracking-widest text-center block">{{ $testOtp }}</code>
+                        </div>
+                        <p class="text-xs text-yellow-600 mt-2">⏱️ This code will expire in 10 minutes</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- OTP Form -->
         <form action="{{ route('member.verify-otp.post') }}" method="POST" class="space-y-4">
             @csrf

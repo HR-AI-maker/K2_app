@@ -12,7 +12,9 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
-            $table->integer('duration_days'); // e.g. 30, 365
+            $table->integer('duration_days')->default(30); // e.g. 30, 365
+            $table->string('billing_cycle')->default('monthly');
+            $table->json('features')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

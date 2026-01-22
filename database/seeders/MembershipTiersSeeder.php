@@ -9,42 +9,49 @@ class MembershipTiersSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('membership_tiers')->insertOrIgnore([
+        DB::table('membership_tiers')->delete();
+
+        DB::table('membership_tiers')->insert([
             [
-                'name' => 'Pro',
+                'name' => 'Basic',
                 'price' => 1000.00,
                 'billing_cycle' => 'monthly',
                 'features' => json_encode([
-                    'community_access' => true,
-                    'marketplace_access' => true,
-                    'events_discount' => '10%',
-                    'gps_tracking' => true,
-                    'offline_maps' => true,
-                    'sos_system' => true,
-                    'max_events' => 5,
+                    'Community Access',
+                    'Marketplace Access',
+                    'Event Discounts (5%)',
                 ]),
-                'description' => 'Perfect for climbers who want to explore and connect',
+                'description' => 'Perfect for beginners',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Ultimate',
-                'price' => 2000.00,
+                'name' => 'Premium',
+                'price' => 2500.00,
                 'billing_cycle' => 'monthly',
                 'features' => json_encode([
-                    'community_access' => true,
-                    'marketplace_access' => true,
-                    'events_discount' => '25%',
-                    'gps_tracking' => true,
-                    'offline_maps' => true,
-                    'sos_system' => true,
-                    'priority_support' => true,
-                    'max_events' => 'unlimited',
-                    'exclusive_content' => true,
-                    'gear_rental_discount' => '20%',
+                    'Everything in Basic',
+                    'GPS & Offline Maps',
+                    'SOS Emergency System',
+                    'Event Discounts (15%)',
                 ]),
-                'description' => 'For serious climbers who want premium benefits',
+                'description' => 'For serious adventurers',
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Elite',
+                'price' => 5000.00,
+                'billing_cycle' => 'monthly',
+                'features' => json_encode([
+                    'Everything in Premium',
+                    'Priority Support 24/7',
+                    'Exclusive Content',
+                    'Free Gear Rental',
+                ]),
+                'description' => 'For expedition leaders',
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -1,119 +1,64 @@
 @extends('layouts.admin')
-
-@section('title', 'Edit ' . $member->full_name)
-
 @section('content')
-<div class="mb-6">
-    <a href="{{ route('admin.members.show', $member) }}" class="text-blue-600 hover:text-blue-800 font-semibold">← Back to Profile</a>
-</div>
-
-<!-- Edit Form -->
-<div class="bg-white rounded-lg shadow p-6 max-w-2xl">
-    <h1 class="text-3xl font-bold mb-6">Edit Member: {{ $member->full_name }}</h1>
-
-    @if($errors->any())
-        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <ul class="list-disc list-inside text-red-700 text-sm">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-900 mb-12">Edit Member</h1>
+        @if ($errors->any())
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <ul class="text-red-700">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <form action="{{ route('admin.members.update', $user->id) }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PATCH')
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 mb-2">First Name</label>
+                        <input type="text" name="first_name" value="{{ $user->first_name }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 mb-2">Last Name</label>
+                        <input type="text" name="last_name" value="{{ $user->last_name }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Email</label>
+                    <input type="email" name="email" value="{{ $user->email }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Phone</label>
+                    <input type="text" name="phone" value="{{ $user->phone }}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 mb-2">Status</label>
+                        <select name="membership_status" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="active" @if($user->membership_status === 'active') selected @endif>Active</option>
+                            <option value="expired" @if($user->membership_status === 'expired') selected @endif>Expired</option>
+                            <option value="suspended" @if($user->membership_status === 'suspended') selected @endif>Suspended</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 mb-2">Tier</label>
+                        <select name="membership_tier" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="standard" @if($user->membership_tier === 'standard') selected @endif>Standard</option>
+                            <option value="premium" @if($user->membership_tier === 'premium') selected @endif>Premium</option>
+                            <option value="lifetime" @if($user->membership_tier === 'lifetime') selected @endif>Elite</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-4 pt-6">
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+                    <a href="{{ route('admin.members.show', $user->id) }}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-bold py-2 px-4 rounded-lg text-center">Cancel</a>
+                </div>
+            </form>
         </div>
-    @endif
-
-    <form method="POST" action="{{ route('admin.members.update', $member) }}" class="space-y-6">
-        @csrf
-        @method('PATCH')
-
-        <!-- Personal Information -->
-        <div class="border-b pb-6">
-            <h2 class="text-xl font-bold mb-4">Personal Information</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                    <input type="text" name="first_name" value="{{ old('first_name', $member->first_name) }}" required class="input">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                    <input type="text" name="last_name" value="{{ old('last_name', $member->last_name) }}" required class="input">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" name="email" value="{{ old('email', $member->email) }}" required class="input">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input type="tel" name="phone" value="{{ old('phone', $member->phone) }}" required class="input">
-                </div>
-            </div>
-
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                <textarea name="address" rows="2" class="input">{{ old('address', $member->address) }}</textarea>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Climbing Discipline</label>
-                    <select name="climbing_discipline" required class="input">
-                        <option value="trekking" @selected(old('climbing_discipline', $member->climbing_discipline) === 'trekking')>Trekking</option>
-                        <option value="rock" @selected(old('climbing_discipline', $member->climbing_discipline) === 'rock')>Rock Climbing</option>
-                        <option value="ice" @selected(old('climbing_discipline', $member->climbing_discipline) === 'ice')>Ice Climbing</option>
-                        <option value="mountaineering" @selected(old('climbing_discipline', $member->climbing_discipline) === 'mountaineering')>Mountaineering</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">User Type</label>
-                    <select name="user_type" required class="input">
-                        <option value="local" @selected(old('user_type', $member->user_type) === 'local')>Local</option>
-                        <option value="foreign" @selected(old('user_type', $member->user_type) === 'foreign')>Foreign</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Membership Settings -->
-        <div class="border-b pb-6">
-            <h2 class="text-xl font-bold mb-4">Membership Settings</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Membership Tier</label>
-                    <select name="membership_tier" required class="input">
-                        <option value="pending" @selected(old('membership_tier', $member->membership_tier) === 'pending')>Pending</option>
-                        <option value="standard" @selected(old('membership_tier', $member->membership_tier) === 'standard')>Standard</option>
-                        <option value="premium" @selected(old('membership_tier', $member->membership_tier) === 'premium')>Premium</option>
-                        <option value="lifetime" @selected(old('membership_tier', $member->membership_tier) === 'lifetime')>Lifetime</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Membership Status</label>
-                    <select name="membership_status" required class="input">
-                        <option value="active" @selected(old('membership_status', $member->membership_status) === 'active')>Active</option>
-                        <option value="expired" @selected(old('membership_status', $member->membership_status) === 'expired')>Expired</option>
-                        <option value="suspended" @selected(old('membership_status', $member->membership_status) === 'suspended')>Suspended</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p class="text-sm text-blue-800">
-                    <strong>Note:</strong> Admin overrides bypass normal verification workflows. Changes are applied immediately.
-                </p>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex gap-4">
-            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">
-                Save Changes
-            </button>
-            <a href="{{ route('admin.members.show', $member) }}" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold">
-                Cancel
-            </a>
-        </div>
-    </form>
+        <div class="mt-8"><a href="{{ route('admin.members.index') }}" class="text-gray-600 hover:text-gray-800">Back to Members</a></div>
+    </div>
 </div>
 @endsection

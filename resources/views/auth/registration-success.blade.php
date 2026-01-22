@@ -45,7 +45,13 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-600">Expires:</span>
-                    <span class="font-semibold">{{ $user->membership_expires_at->format('M d, Y') }}</span>
+                    <span class="font-semibold">
+                        @php
+                            $transaction = $user->membershipTransactions()->latest()->first();
+                            $expireDate = $transaction ? $transaction->created_at->addMonth()->format('M d, Y') : 'N/A';
+                        @endphp
+                        {{ $expireDate }}
+                    </span>
                 </div>
             </div>
         </div>

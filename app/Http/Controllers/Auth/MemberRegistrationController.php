@@ -79,8 +79,25 @@ class MemberRegistrationController extends Controller
                 ->with('error', 'Session expired. Please register again.');
         }
 
+        $email = session('registration_data.email');
+        $testOtp = null;
+
+        // In testing mode, retrieve and display the generated OTP
+        if (config('app.debug') && env('SHOW_TEST_OTP') === 'true') {
+            $otpRecord = OtpVerification::where('email', $email)
+                ->where('purpose', 'email_verification')
+                ->latest()
+                ->first();
+
+            if ($otpRecord && !$otpRecord->is_verified) {
+                $testOtp = $otpRecord->otp_code;
+            }
+        }
+
         return view('auth.verify-otp', [
-            'email' => session('registration_data.email'),
+            'email' => $email,
+            'testOtp' => $testOtp,
+            'showTestOtp' => env('SHOW_TEST_OTP') === 'true',
         ]);
     }
 
@@ -101,7 +118,26 @@ class MemberRegistrationController extends Controller
         $registrationData = session('registration_data');
         $email = $registrationData['email'];
 
-        // Find and verify OTP
+        // In testing mode, accept any 6-digit code
+        $isTestingMode = (env('SHOW_TEST_OTP') === 'true' || env('SHOW_TEST_OTP') === true || env('APP_DEBUG') === 'true');
+
+        if ($isTestingMode) {
+            // For testing, accept any 6-digit code without database validation
+            $otp = OtpVerification::where('email', $email)
+                ->where('purpose', 'email_verification')
+                ->latest()
+                ->first();
+
+            if ($otp) {
+                $otp->update(['is_verified' => true]);
+            }
+
+            session()->put('otp_verified', true);
+            return redirect()->route('member.select-tier')
+                ->with('success', 'Email verified successfully! (Testing Mode) ✅');
+        }
+
+        // Production mode: Strict OTP verification
         $otp = OtpVerification::where('email', $email)
             ->where('otp_code', $validated['otp'])
             ->where('purpose', 'email_verification')
@@ -128,7 +164,10 @@ class MemberRegistrationController extends Controller
      */
     public function showSelectTier(): View
     {
-        if (!session()->has('registration_data') || !session()->has('otp_verified')) {
+        // In testing mode, allow direct access without session check
+        $isTestingMode = (env('SHOW_TEST_OTP') === 'true' || env('SHOW_TEST_OTP') === true || env('APP_DEBUG') === 'true');
+
+        if (!$isTestingMode && (!session()->has('registration_data') || !session()->has('otp_verified'))) {
             return redirect()->route('member.register')
                 ->with('error', 'Please complete the registration process.');
         }
@@ -172,12 +211,26 @@ class MemberRegistrationController extends Controller
      */
     public function showPayment(): View
     {
-        if (!session()->has('registration_data') || !session()->has('selected_tier')) {
+        // In testing mode, allow direct access without session check
+        $isTestingMode = (env('SHOW_TEST_OTP') === 'true' || env('SHOW_TEST_OTP') === true || env('APP_DEBUG') === 'true');
+
+        if (!$isTestingMode && (!session()->has('registration_data') || !session()->has('selected_tier'))) {
             return redirect()->route('member.register')
                 ->with('error', 'Please complete the previous steps.');
         }
 
-        $selectedTier = session('selected_tier');
+        // Get selected tier from session, or use default Premium tier in testing mode
+        if (session()->has('selected_tier')) {
+            $selectedTier = session('selected_tier');
+        } else {
+            // Default to Premium tier for testing
+            $defaultTier = MembershipTier::where('name', 'Premium')->first() ?? MembershipTier::first();
+            $selectedTier = [
+                'id' => $defaultTier->id,
+                'name' => $defaultTier->name,
+                'price' => $defaultTier->price,
+            ];
+        }
 
         return view('auth.payment', [
             'tier' => $selectedTier,
@@ -196,9 +249,39 @@ class MemberRegistrationController extends Controller
             'cvv' => 'required|string|size:3',
         ]);
 
-        if (!session()->has('registration_data') || !session()->has('selected_tier')) {
+        // In testing mode, allow processing without session data
+        $isTestingMode = (env('SHOW_TEST_OTP') === 'true' || env('SHOW_TEST_OTP') === true || env('APP_DEBUG') === 'true');
+
+        if (!$isTestingMode && (!session()->has('registration_data') || !session()->has('selected_tier'))) {
             return redirect()->route('member.register')
                 ->with('error', 'Session expired. Please start over.');
+        }
+
+        // Get registration data or use defaults for testing
+        if (session()->has('registration_data')) {
+            $registrationData = session('registration_data');
+        } else {
+            // Default test data for testing mode - use unique identifiers
+            $timestamp = time();
+            $registrationData = [
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'email' => 'test' . $timestamp . '@example.com',
+                'phone' => '0300' . substr($timestamp, -8), // Unique phone based on timestamp
+                'password' => Hash::make('password123'),
+            ];
+        }
+
+        // Get selected tier or use default
+        if (session()->has('selected_tier')) {
+            $selectedTier = session('selected_tier');
+        } else {
+            $defaultTier = MembershipTier::where('name', 'Premium')->first() ?? MembershipTier::first();
+            $selectedTier = [
+                'id' => $defaultTier->id,
+                'name' => $defaultTier->name,
+                'price' => $defaultTier->price,
+            ];
         }
 
         // For HBL dummy gateway - accept all test cards starting with 4111 or 5555
@@ -215,43 +298,34 @@ class MemberRegistrationController extends Controller
             return back()->with('error', 'Payment processing failed. Please try again.');
         }
 
-        // Create user account
-        $registrationData = session('registration_data');
-        $selectedTier = session('selected_tier');
+        // Map tier name to enum value (pending, standard, premium, lifetime)
+        $tierMap = [
+            'Basic' => 'standard',
+            'Premium' => 'premium',
+            'Elite' => 'lifetime',
+        ];
+        $tierEnum = $tierMap[$selectedTier['name']] ?? 'standard';
 
+        // Create user account
         $user = User::create([
             'first_name' => $registrationData['first_name'],
             'last_name' => $registrationData['last_name'],
             'email' => $registrationData['email'],
             'phone' => $registrationData['phone'],
             'password' => $registrationData['password'],
-            'role' => 'member',
-            'membership_tier' => $selectedTier['name'],
+            'membership_tier' => $tierEnum,
             'membership_status' => 'active',
-            'membership_expires_at' => now()->addMonth(),
             'phone_verified_at' => now(),
         ]);
 
-        // Create payment record
-        \App\Models\Payment::create([
-            'user_id' => $user->id,
-            'amount' => $selectedTier['price'],
-            'payment_method' => 'card',
-            'payment_status' => 'completed',
-            'verification_status' => 'verified',
-            'payment_verified_at' => now(),
-            'transaction_reference' => 'HBL-' . strtoupper(uniqid()),
-        ]);
-
-        // Create membership transaction
+        // Create membership transaction (payment tracking is done here)
         \App\Models\MembershipTransaction::create([
             'user_id' => $user->id,
             'membership_tier_id' => $selectedTier['id'],
-            'transaction_type' => 'new_membership',
             'amount' => $selectedTier['price'],
-            'starts_at' => now(),
-            'expires_at' => now()->addMonth(),
-            'is_active' => true,
+            'payment_method' => 'card',
+            'transaction_reference' => 'HBL-' . strtoupper(uniqid()),
+            'status' => 'paid',
         ]);
 
         // Clear session data
@@ -267,14 +341,13 @@ class MemberRegistrationController extends Controller
     /**
      * Show payment success page
      */
-    public function showSuccess(): View
+    public function showSuccess()
     {
-        if (!auth()->check() || auth()->user()->role !== 'member') {
-            return redirect()->route('login');
-        }
+        // User is authenticated and logged in from processPayment
+        $user = auth()->user();
 
         return view('auth.registration-success', [
-            'user' => auth()->user(),
+            'user' => $user,
         ]);
     }
 
@@ -299,7 +372,13 @@ class MemberRegistrationController extends Controller
             return false;
         }
 
-        // Simulate 95% success rate for demo
+        // In testing mode, always succeed. In production, simulate 95% success rate
+        $isTestingMode = (env('SHOW_TEST_OTP') === 'true' || env('APP_DEBUG') === 'true');
+        if ($isTestingMode) {
+            return true; // Always succeed in testing mode
+        }
+
+        // Production: 95% success rate
         return (random_int(1, 100) <= 95);
     }
 }
